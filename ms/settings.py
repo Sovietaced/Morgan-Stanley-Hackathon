@@ -1,17 +1,22 @@
+import os
+import socket
+import dj_database_url
 # Django settings for ms project.
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    # ('Your Name', 'your_email@example.com'),
+    ('Bob Nisco', 'BobNisco@gmail.com'),
+    ('Jason Parraga', 'sovietaced@gmail.com'),
+    ('Vin Raia', 'vsraia@gmail.com'),
 )
 
 MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': '',                      # Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
         'USER': '',
@@ -20,6 +25,21 @@ DATABASES = {
         'PORT': '',                      # Set to empty string for default.
     }
 }
+if not os.environ.get('MYSITE_PRODUCTION', False):
+    DATABASES = {
+                'default': {
+                        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+                        'NAME': 'resnet_db',                        # Or path to database file if using sqlite3.
+                        'USER': '',                   # Not used with sqlite3.
+                        'PASSWORD': '',           # Not used with sqlite3.
+                        'HOST': '',              # Set to empty string for localhost. Not used with sqlite3.
+                        'PORT': '',                       # Set to empty string for default. Not used with sqlite3.
+                }
+        }
+
+if os.environ.get('MYSITE_PRODUCTION', True):
+    # Heroku Database
+    DATABASES['default'] =  dj_database_url.config()
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
@@ -147,18 +167,7 @@ LOGGING = {
             'class': 'django.utils.log.AdminEmailHandler'
         }
     },
-    'loggers': {
-        'django.request': {
-            'handlers': ['mail_admins'],
-            'level': 'ERROR',
-            'propagate': True,
-        },
-    }
 }
-
-# Parse database configuration from $DATABASE_URL
-import dj_database_url
-DATABASES['default'] =  dj_database_url.config()
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
