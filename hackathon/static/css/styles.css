@@ -12,3 +12,6 @@
 .container {
 	margin-top: 45px;
 }
+.tablesorter th {
+	cursor: pointer;
+}

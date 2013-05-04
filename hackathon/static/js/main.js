@@ -142,8 +142,10 @@ $(document).ready(function(){
 		}]
 	});
 
+	// Allows for the dragging and dropping of dashboard components
 	$("#sortable_container").sortable();
 
+	// Make the links pretty when you click them
 	var nav_links = $('.nav').find('li');
 	$('.nav').on('click', 'a', function(e) {
 		var el = $(this),
@@ -153,9 +155,13 @@ $(document).ready(function(){
 		});
 		parent.addClass('active');
 	});
+
+	// Account for the sticky navbar
 	$('.navbar li a').click(function(event) {
 		event.preventDefault();
 		$($(this).attr('href'))[0].scrollIntoView();
 		scrollBy(0, -45);
 	});
+
+	$('.tablesorter').tablesorter();
 });
