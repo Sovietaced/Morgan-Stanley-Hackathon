@@ -1,6 +1,5 @@
 from django.db import models
 
-
 class Region(models.Model):
 	REGION_CHOICES = (
 		("n", "North America"),
