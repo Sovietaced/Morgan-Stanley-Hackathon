@@ -99,4 +99,6 @@ $(document).ready(function(){
 			data: [80]
 		}]
 	});
+
+	$("#sortable_container").sortable();
 });
