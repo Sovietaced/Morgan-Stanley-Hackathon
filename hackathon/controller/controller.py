@@ -2,6 +2,9 @@ import socket, sys
 from datetime import datetime
 from ..models import Tier, Turn, Device, Region, Profit, Demand
 from django.conf import settings
+from multiprocessing.dummy import Pool
+import threading, thread
+threading._DummyThread._Thread__stop = lambda x: 42
 
 def run(port=sys.argv[1]):
     connection = connect(port)
@@ -14,41 +17,54 @@ def run(port=sys.argv[1]):
         Turn.objects.all().delete()
         # Begin the game
         connection.send('START')
-        
-        #while True:
-        # Generate the turn model
-        turn = Turn()
-        turn.save()
-        config = connection.recv(4096)
-            #if not 'END' in config:
-        config = config.strip('CONFIG ').split(' ')
-        profit = Profit()
-        turn.config = generate_server_map_model(config)
-        turn.profit = profit.id
-        connection.send('RECD')
-        demand = connection.recv(4096)
-        demand = demand.strip('DEMAND ').split(' ')
-        turn.demands = generate_demand_models(demand)
-        connection.send('RECD')
-        distribution = connection.recv(4096)
-        distribution = distribution.strip('DIST ').split(' ')
-        turn.distribution = generate_server_map_model(distribution)
-        print distribution
-        connection.send('RECD')
-        profit = connection.recv(4096)
-        profit = profit.strip('PROFIT ').split(' ')
-        profit = [p for p in profit if p != '']
-        profit 
-        print profit
-        turn.save()
-            #else:
-                #break;
-        connection.send('CONTROL 1 1 1 1 1 1 1 1 1')
-        
-        connection.send('STOP') 
-    else:
-        print 'Connection Failed'
+                
+        # Run this shit on a new thread!
+        pool = Pool(processes=4)  
+        pool.apply_async(start, [connection])     
     
+def start(connection):
+    day_str = None
+    day_num = 0
+    while True:
+        # Generate the turn model
+        config = connection.recv(4096)
+        if not 'END' in config:
+        
+            # Generate Turn model to dump stuff into
+            turn = Turn()
+            turn.save()
+            
+            # Config Parsing
+            config = config.strip('CONFIG ').split(' ')
+            turn.config = generate_server_map_model(config)
+            
+            # Demand and Time Parsing
+            connection.send('RECD')
+            demand = connection.recv(4096)
+            demand = demand.strip('DEMAND ').split(' ')
+            date, demands, day_str, day_num = generate_demand_models(demand,day_str, day_num)
+            turn.time = date
+            turn.demands = demands
+            
+            # Distribution Parsing
+            connection.send('RECD')
+            distribution = connection.recv(4096)
+            distribution = distribution.strip('DIST ').split(' ')
+            turn.distribution = generate_server_map_model(distribution)
+            
+            # Profit Parsing
+            connection.send('RECD')
+            profit = connection.recv(4096)
+            profit = profit.strip('PROFIT ').split(' ')
+            profit = [p for p in profit if p != '']
+            turn.profit = generate_profit_model(profit)
+            turn.save()
+            connection.send('CONTROL 1 1 1 1 1 1 1 1 1')
+        else:
+            break
+    
+    connection.send('STOP') 
+
 def generate_cost_models(costs):
     
     # CLean the DB before we start a new game
@@ -119,16 +135,24 @@ def generate_server_map_model(server_map):
         devices.append(db_device)
         
     return devices
+
+def generate_demand_models(demand_list, day_str, day_num):
     
-def generate_demand_models(demand_list):
     day = demand_list[0]
+    
+    if not day_str:
+        day_str = day
+    
+    if day_str != day:
+        day_num += 1
+        
     hours = demand_list[1]
     minutes = demand_list[2]
     seconds = demand_list[3]
     
-    date = datetime.today()
-    
-    
+    today = datetime.today()
+    day = today.day + day_num
+    date = datetime(today.year, today.month, day, int(hours),int(minutes),int(seconds))
     
     demands = [] 
     for region in Region.objects.all():
@@ -138,7 +162,17 @@ def generate_demand_models(demand_list):
         demand.save()
         demands.append(demand)
         
-    return demands
+    return date, demands, day_str, day_num
+
+def generate_profit_model(profit):
+    
+    p = Profit()
+    p.last_profit = int(profit[0])
+    p.last_potential = int(profit[1])
+    p.total_profit = int(profit[2])
+    p.total_potential = int(profit[3])
+    p.save()
+    return p
 
 def connect(port):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

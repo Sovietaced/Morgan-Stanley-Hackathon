@@ -17,6 +17,15 @@ from controller.controller import run
 def index(request):
 	return render_to_response('index.html')
 
+def get_turn_data(request, id=1):
+	
+	turn = Turn.objects.get(id=id)
+	if turn:
+		return HttpResponse(json.dumps(response_data), mimetype="application/json")
+	else:
+		return 
+
+
 def test(request):
 	myPort = 57013
 	run(myPort)

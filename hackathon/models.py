@@ -45,10 +45,13 @@ class Profit(models.Model):
 	last_profit = models.IntegerField(db_index=True)
 	last_potential = models.IntegerField(db_index=True)
 	total_profit = models.IntegerField(db_index=True)
-	potential = models.IntegerField(db_index=True)
+	total_potential = models.IntegerField(db_index=True)
+	
+	def __unicode__(self):
+		return "Profit ID : " + str(self.id) + " last_profit : " + str(self.last_profit) + " last_potential : " + str(self.last_potential) + " total_profit : " + str(self.total_profit) + " total_potential : " + str(self.total_potential) 
 	
 class Turn(models.Model):
-	time = models.DateTimeField(db_index=True)
+	time = models.DateTimeField(null=True, blank=True, db_index=True)
 	config = models.ManyToManyField(Device, blank=True, related_name='cfg', verbose_name='current distribution')
 	demands = models.ManyToManyField(Demand, null=True, blank=True, verbose_name="list of demands")
 	distribution = models.ManyToManyField(Device, null=True, blank=True, related_name='distribution', verbose_name="distribution of the last turn")

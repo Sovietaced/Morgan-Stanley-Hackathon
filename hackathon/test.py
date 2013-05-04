@@ -1,6 +1,18 @@
-import socket
+import socket, thread
 from datetime import datetime
 
+
+def run():
+    connection = connect(57013)
+
+    if connection:
+        print 'swag'
+        costs = connection.recv(4096)
+        connection.send('START')
+            
+        # Run this shit on a new thread!
+        start(connection)
+        
 def connect(port):
     print 'we startin'
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -10,27 +22,24 @@ def connect(port):
     s.send('RECD')
     return s
 
-def test():
-    
-    date = datetime.today()
-    print date
-    connection = connect(57013)
-    if connection:
-        print connection.recv(4096)
-        print connection.send('START')
-        print connection.recv(4096)
-        print connection.send('RECD')
-        print connection.recv(4096)
-        print connection.send('RECD')
-        print connection.recv(4096)
-        print connection.send('RECD')
-        print connection.recv(4096)
-            #else:
-                #break;
-        connection.send('CONTROL 1 1 1 1 1 1 1 1 1')
+def start(connection):
+    print 'started connection'
+    while True:
+        # Generate the turn model
+        config = connection.recv(4096)
+        if not 'END' in config:
         
-        connection.send('STOP') 
-    else:
-        print 'Connection Failed'
+            print connection.send('RECD')
+            print connection.recv(4096)
+            print connection.send('RECD')
+            print connection.recv(4096)
+            print connection.send('RECD')
+            print connection.recv(4096)
+            print connection.send('CONTROL 1 1 1 1 1 1 1 1 1')
+        else:
+            break
+    
+    connection.send('STOP')
+    
 if __name__ == "__main__":
-    test()
+    run()
