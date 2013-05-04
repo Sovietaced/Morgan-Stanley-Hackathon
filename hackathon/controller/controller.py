@@ -12,7 +12,6 @@ def main(port=sys.argv[1]):
     else:
         print 'Connection Failed'
     
-    
 def connect(port):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect(('67.202.15.69', int(port)))
@@ -20,7 +19,6 @@ def connect(port):
     s.recv(4096)
     s.send('RECD')
     return s
-    
 
 if __name__ == "__main__":
     main()
