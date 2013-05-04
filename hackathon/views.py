@@ -11,12 +11,18 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render_to_response, get_object_or_404
-from controller.controller import main
+from models import Tier
+from controller.controller import run
 
 def index(request):
 	return render_to_response('index.html')
 
-def socket_test(request):
-	myPort = 57012
-	main(myPort)
-	return render_to_response('index.html')
+def test(request):
+	myPort = 57013
+	run(myPort)
+	
+	tiers = Tier.objects.all()
+	
+	return render_to_response('index.html', {
+		'tiers' : tiers
+	})

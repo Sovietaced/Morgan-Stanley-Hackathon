@@ -15,9 +15,9 @@ class Region(models.Model):
 	
 class Tier(models.Model):
 	TIER_CHOICES = (
-		("l", "Laptop"),
-		("d", "Desktop"),
-		("m", "Mobile"),
+		("w", "Web"),
+		("j", "Java"),
+		("d", "Database"),
 	)
 	tier = models.CharField(max_length=1, choices=TIER_CHOICES, db_index=True)
 	cost = models.IntegerField(db_index=True)
@@ -54,3 +54,6 @@ class Turn(models.Model):
 	profit = models.ForeignKey(Profit, db_index=True)
 	control = models.ManyToManyField(Device, related_name='control',verbose_name="our move")
 	revenue_cents = models.IntegerField(db_index=True)
+	
+if __name__ == "__main__" and __package__ is None:
+    __package__ = "hackathon.models"
