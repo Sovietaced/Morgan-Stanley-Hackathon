@@ -20,13 +20,13 @@ $(document).ready(function(){
 		},
 		series: [{
 			name: 'Web',
-			data : [4]
+			data : []
 		}, {
 			name: 'Java',
-			data: [3]
+			data: []
 		}, {
 			name: 'Database',
-			data: [2]
+			data: []
 		}]
 	});
 
@@ -42,7 +42,7 @@ $(document).ready(function(){
 			text: 'Current Demand By Region'
 		},
 		xAxis: {
-			categories: ['12:00:00','12:00:30','12:01:00','12:01:30'],
+			categories: [],
 			title: {
 				text: 'Time'
 			}
@@ -54,13 +54,13 @@ $(document).ready(function(){
 		},
 		series: [{
 			name: 'North America',
-			data : [200,240,450,349]
+			data : []
 		}, {
 			name: 'Europe',
-			data : [4,60,200,250]
+			data : []
 		}, {
 			name: 'Asia',
-			data : [400,410,420,430]
+			data : []
 		}]
 	});
 
@@ -92,11 +92,11 @@ $(document).ready(function(){
 		series: [{
 			name: 'Loss',
 			color: '#E74C3C',
-			data: [20]
+			data: []
 		},{
 			name: 'Profit',
 			color: '#27AE60',
-			data: [80]
+			data: []
 		}]
 	});
 
@@ -122,10 +122,10 @@ $(document).ready(function(){
 		},
 		series: [{
 			name: 'Demand',
-			data: [95,300,650,175,376,987,43,80,100]
+			data: []
 		},{
 			name: 'Supply',
-			data: [180,400,1000,180,400,1000,180,400,1000]
+			data: []
 		}]
 	});
 
