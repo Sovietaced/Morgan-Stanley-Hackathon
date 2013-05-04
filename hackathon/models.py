@@ -58,9 +58,19 @@ class Turn(models.Model):
 	profit = models.ForeignKey(Profit, null=True, blank=True, db_index=True)
 	control = models.ManyToManyField(Device, null=True,blank=True, related_name='control',verbose_name="our move")
 	revenue_cents = models.IntegerField(blank=True, null=True, db_index=True)
+	moving_averages = models.ManyToManyField(MovingAverage, null=True, blank=True, verbose_name="moving averages")
 	
 	def __unicode__(self):
 		return 'swag'
+	
+class MovingAverage(models.Model):
+	
+	transactions = models.IntegerField(blank=True, null=True, db_index=True)
+	region = models.ForeignKey(Region, null=True, blank=True, db_index=True)
+	short_term = models.IntegerField(blank=True, null=True, db_index=True)
+	long_term = models.IntegerField(blank=True, null=True, db_index=True)
+	web_needed = models.IntegerField(blank=True, null=True, db_index=True)
+
 	
 
 	
