@@ -130,7 +130,13 @@ $(document).ready(function(){
 	});
 
 	// Allows for the dragging and dropping of dashboard components
-	//$("#sortable_container").sortable();
+	$("#sortable_container").sortable({
+		update: function(event, ui) {
+			$('[data-spy="scroll"]').each(function () {
+				$(this).scrollspy('refresh');
+			});
+		}
+	});
 
 	// Make the links pretty when you click them
 	var nav_links = $('.nav').find('li');
@@ -151,5 +157,4 @@ $(document).ready(function(){
 	});
 
 	$('.tablesorter').tablesorter();
-	//$('body').scrollspy({offset:'45'});
 });
