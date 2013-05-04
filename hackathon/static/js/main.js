@@ -1,46 +1,102 @@
 $(document).ready(function(){
-	var chart = new Highcharts.Chart({
+	var totalCountsChart = new Highcharts.Chart({
 		chart: {
-			renderTo: 'myChart',
-			type: 'area'
+			renderTo: 'total_counts',
+			type: 'column'
 		},
 		credits : {
 			enabled : false
 		},
 		title: {
-			text: 'Hermes'
+			text: 'Current Total Configuration Counts'
 		},
 		xAxis: {
-			categories: ["January","February","March","April","May","June","July","August","Septemper","October","November","December"]
+			categories: ['Current']
 		},
 		yAxis: {
 			title: {
-				text: 'Total Trades'
+				text: 'Count'
 			}
 		},
 		series: [{
 			name: 'Web',
-			data : [65,59,90,81,56,55,40,45,69,70,32,10]
+			data : [4]
 		}, {
 			name: 'Java',
-			data: [28,48,40,19,96,27,100,43,78,88,45,50]
+			data: [3]
 		}, {
 			name: 'Database',
-			data: [23,65,13,87,12,56,76,23,43,12,76,88]
+			data: [2]
 		}]
 	});
-	// MASTER TROLE 2013
-	setInterval(function() {
-		var newData1 = [],
-			newData2 = [],
-			newData3 = [];
-		for (var i = 0; i < 12; i++) {
-			newData1[i] = Math.floor(Math.random()*100);
-			newData2[i] = Math.floor(Math.random()*100);
-			newData3[i] = Math.floor(Math.random()*100);
-		}
-		chart.series[0].setData(newData1);
-		chart.series[1].setData(newData2);
-		chart.series[2].setData(newData3);
-	}, 1000);
+
+	var demandByRegion = new Highcharts.Chart({
+		chart: {
+			renderTo: 'demand_by_region',
+			type: 'line'
+		},
+		credits : {
+			enabled : false
+		},
+		title: {
+			text: 'Current Demand By Region'
+		},
+		xAxis: {
+			categories: ['12:00:00','12:00:30','12:01:00','12:01:30'],
+			title: {
+				text: 'Time'
+			}
+		},
+		yAxis: {
+			title: {
+				text: 'Transaction Count'
+			}
+		},
+		series: [{
+			name: 'North America',
+			data : [200,240,450,349]
+		}, {
+			name: 'Europe',
+			data : [4,60,200,250]
+		}, {
+			name: 'Asia',
+			data : [400,410,420,430]
+		}]
+	});
+
+	var totalProfit = new Highcharts.Chart({
+		chart: {
+			renderTo: 'total_profit',
+			type: 'column'
+		},
+		credits : {
+			enabled : false
+		},
+		title: {
+			text: 'Total Profit'
+		},
+		xAxis: {
+			categories: ['Profit','Loss'],
+		},
+		yAxis: {
+			min: 0,
+			title: {
+				text: 'Percentage of Total Profit'
+			}
+		},
+		plotOptions: {
+			column: {
+				stacking: 'percent'
+			}
+		},
+		series: [{
+			name: 'Loss',
+			color: '#E74C3C',
+			data: [20]
+		},{
+			name: 'Profit',
+			color: '#27AE60',
+			data: [80]
+		}]
+	});
 });
