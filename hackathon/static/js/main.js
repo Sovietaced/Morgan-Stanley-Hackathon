@@ -100,6 +100,48 @@ $(document).ready(function(){
 		}]
 	});
 
+	var demandVsSupply = new Highcharts.Chart({
+		chart: {
+			renderTo: 'demand_vs_supply',
+			type: 'column'
+		},
+		credits : {
+			enabled : false
+		},
+		title: {
+			text: 'Demand vs. Supply'
+		},
+		xAxis: {
+			categories: ['NA Web','NA Java','NA DB','EU Web','EU Java','EU DB','AP Web','AP Java','AP DB'],
+		},
+		yAxis: {
+			min: 0,
+			title: {
+				text: 'Percentage of Total Profit'
+			}
+		},
+		plotOptions: {
+			column: {
+				stacking: 'normal'
+			}
+		},
+		tooltip: {
+			formatter: function() {
+				return '<b>'+ this.x +'</b><br/>'+
+					this.series.name +': '+ this.y +'<br/>'+
+					'Total: '+ this.point.stackTotal + '<br/>'
+			}
+		},
+		series: [{
+			name: 'Demand',
+			color: '#E74C3C',
+			data: [0,1,4,4,2,10,4,0,1]
+		},{
+			name: 'Supply',
+			data: [20,40,50,50,50,50,50,20,10]
+		}]
+	});
+
 	$("#sortable_container").sortable();
 
 	var nav_links = $('.nav').find('li');
