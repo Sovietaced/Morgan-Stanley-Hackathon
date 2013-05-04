@@ -4,7 +4,13 @@
 <div class="row">
 	<div class="span12">
         {% for k in turns %}
-            {{ k}}
+            {{ k.config.values}}
+            <br />
+            <br />
+            {{k.distribution.values}}
+            <br />
+            <br />
+            {{k.demands.values}}
         {% endfor %}
         <br />
         {% for t in tiers %}

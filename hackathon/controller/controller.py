@@ -1,5 +1,6 @@
 import socket, sys
-from ..models import Tier, Turn, Device, Region, Profit
+from datetime import datetime
+from ..models import Tier, Turn, Device, Region, Profit, Demand
 from django.conf import settings
 
 def run(port=sys.argv[1]):
@@ -10,6 +11,7 @@ def run(port=sys.argv[1]):
         generate_cost_models(costs)
         generate_region_models()
         
+        Turn.objects.all().delete()
         # Begin the game
         connection.send('START')
         
@@ -21,16 +23,16 @@ def run(port=sys.argv[1]):
             #if not 'END' in config:
         config = config.strip('CONFIG ').split(' ')
         profit = Profit()
-        turn.config = generate_config_model(config)
+        turn.config = generate_server_map_model(config)
         turn.profit = profit.id
-        turn.save()
         connection.send('RECD')
         demand = connection.recv(4096)
         demand = demand.strip('DEMAND ').split(' ')
-        print demand
+        turn.demands = generate_demand_models(demand)
         connection.send('RECD')
         distribution = connection.recv(4096)
         distribution = distribution.strip('DIST ').split(' ')
+        turn.distribution = generate_server_map_model(distribution)
         print distribution
         connection.send('RECD')
         profit = connection.recv(4096)
@@ -38,6 +40,7 @@ def run(port=sys.argv[1]):
         profit = [p for p in profit if p != '']
         profit 
         print profit
+        turn.save()
             #else:
                 #break;
         connection.send('CONTROL 1 1 1 1 1 1 1 1 1')
@@ -87,7 +90,7 @@ def generate_region_models():
     a_region.save()
     
     
-def generate_config_model(config):
+def generate_server_map_model(server_map):
     
     devices = []
     
@@ -95,12 +98,47 @@ def generate_config_model(config):
         web_device = Device()
         web_device.tier = Tier.objects.get(tier='w')
         web_device.region = region
-        web_device.count = config[list(Region.objects.all()).index(region)/3]
+        web_device.count = server_map[list(Region.objects.all()).index(region)]
         web_device.save()
         devices.append(web_device)
         
+    for region in Region.objects.all():
+        java_device = Device()
+        java_device.tier = Tier.objects.get(tier='j')
+        java_device.region = region
+        java_device.count = server_map[3 + list(Region.objects.all()).index(region)]
+        java_device.save()
+        devices.append(java_device)
+        
+    for region in Region.objects.all():
+        db_device = Device()
+        db_device.tier = Tier.objects.get(tier='d')
+        db_device.region = region
+        db_device.count = server_map[6 + list(Region.objects.all()).index(region)]
+        db_device.save()
+        devices.append(db_device)
+        
     return devices
     
+def generate_demand_models(demand_list):
+    day = demand_list[0]
+    hours = demand_list[1]
+    minutes = demand_list[2]
+    seconds = demand_list[3]
+    
+    date = datetime.today()
+    
+    
+    
+    demands = [] 
+    for region in Region.objects.all():
+        demand = Demand()
+        demand.region = region
+        demand.count = demand_list[4 + list(Region.objects.all()).index(region)]
+        demand.save()
+        demands.append(demand)
+        
+    return demands
 
 def connect(port):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -111,4 +149,4 @@ def connect(port):
     return s
 
 if __name__ == "__main__":
-    main()
+    run()

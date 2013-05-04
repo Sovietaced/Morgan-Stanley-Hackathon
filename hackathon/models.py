@@ -31,14 +31,14 @@ class Device(models.Model):
 	count = models.IntegerField(db_index=True)
 
 	def __unicode__(self):
-		return 'Device : ' + str(self.id) + " Region : " + self.region.region + " Count : " + str(self.count)
+		return 'Device : ' + str(self.id) + " Region : " + self.region.region + " Count : " + str(self.count) + " Tier : " + self.tier.tier
 	
 class Demand(models.Model):
 	region = models.ForeignKey(Region, db_index=True)
 	count = models.IntegerField(db_index=True)
 	
 	def __unicode__(self):
-		return self.region + ' ' + str(self.count)
+		return self.region.region + ' ' + str(self.count)
 	
 
 class Profit(models.Model):
@@ -48,13 +48,13 @@ class Profit(models.Model):
 	potential = models.IntegerField(db_index=True)
 	
 class Turn(models.Model):
-
-	config = models.ManyToManyField(Device, null=True, blank=True, related_name='cfg', verbose_name='current distribution')
+	time = models.DateTimeField(db_index=True)
+	config = models.ManyToManyField(Device, blank=True, related_name='cfg', verbose_name='current distribution')
 	demands = models.ManyToManyField(Demand, null=True, blank=True, verbose_name="list of demands")
 	distribution = models.ManyToManyField(Device, null=True, blank=True, related_name='distribution', verbose_name="distribution of the last turn")
 	profit = models.ForeignKey(Profit, null=True, blank=True, db_index=True)
-	control = models.ManyToManyField(Device, null=True, blank=True, related_name='control',verbose_name="our move")
-	revenue_cents = models.IntegerField(null=True, blank=True, db_index=True)
+	control = models.ManyToManyField(Device, null=True,blank=True, related_name='control',verbose_name="our move")
+	revenue_cents = models.IntegerField(blank=True, null=True, db_index=True)
 	
 	def __unicode__(self):
 		return 'swag'
