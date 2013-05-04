@@ -157,4 +157,20 @@ $(document).ready(function(){
 	});
 
 	$('.tablesorter').tablesorter();
+
+	$('#start_game_button').on('click', function(e) {
+		var el = $(this);
+	});
+
+	$('#speed_up_button').on('click', function(e) {
+		var el = $(this);
+	});
+
+	$('#slow_down_button').on('click', function(e) {
+		var el = $(this);
+	});
+
+	$('#stop_game_button').on('click', function(e) {
+		var el = $(this);
+	});
 });
