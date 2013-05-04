@@ -1,5 +1,5 @@
 import socket, sys
-from ..models import Tier, Turn, Device, Region
+from ..models import Tier, Turn, Device, Region, Profit
 from django.conf import settings
 
 def run(port=sys.argv[1]):
@@ -17,12 +17,12 @@ def run(port=sys.argv[1]):
         # Generate the turn model
         turn = Turn()
         turn.save()
-        
         config = connection.recv(4096)
             #if not 'END' in config:
         config = config.strip('CONFIG ').split(' ')
-        
-        turn.config,add(generate_config_model(config))
+        profit = Profit()
+        turn.config = generate_config_model(config)
+        turn.profit = profit.id
         turn.save()
         connection.send('RECD')
         demand = connection.recv(4096)
