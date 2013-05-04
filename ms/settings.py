@@ -25,11 +25,11 @@ DATABASES = {
         'PORT': '',                      # Set to empty string for default.
     }
 }
-if not os.environ.get('MYSITE_PRODUCTION', False):
+if os.environ.get('MYSITE_PRODUCTION', "False"):
     DATABASES = {
                 'default': {
                         'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-                        'NAME': 'resnet_db',                        # Or path to database file if using sqlite3.
+                        'NAME': 'hackathon_db',                        # Or path to database file if using sqlite3.
                         'USER': '',                   # Not used with sqlite3.
                         'PASSWORD': '',           # Not used with sqlite3.
                         'HOST': '',              # Set to empty string for localhost. Not used with sqlite3.
@@ -37,9 +37,9 @@ if not os.environ.get('MYSITE_PRODUCTION', False):
                 }
         }
 
-if os.environ.get('MYSITE_PRODUCTION', True):
+if not os.environ.get('MYSITE_PRODUCTION', "False"):
     # Heroku Database
-    DATABASES['default'] =  dj_database_url.config()
+    DATABASES['default'] = dj_database_url.config()
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
