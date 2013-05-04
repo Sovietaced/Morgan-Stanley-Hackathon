@@ -1,0 +1,17 @@
+.positive_profit {
+	color: #27AE60;
+	font-size: 2.0em;
+}
+.negative_profit {
+	color: #E74C3C;
+	font-size: 1.5em;
+}
+.navbar .navbar-inner {
+	border-radius: 0px;
+}
+.container {
+	margin-top: 45px;
+}
+.tablesorter th {
+	cursor: pointer;
+}
