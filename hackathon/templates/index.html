@@ -3,8 +3,21 @@
 {% block content %}
 <div class="row">
 	<div class="span12">
+        {% for k in turns %}
+            {{ k}}
+        {% endfor %}
+        <br />
         {% for t in tiers %}
             {{t.get_tier_display }}
+        {% endfor %}
+        <br />
+           {% for d in devices %}
+               <br />
+            {{d }}
+        {% endfor %}
+        <br />
+         {% for r in regions %}
+            {{r.get_region_display }}
         {% endfor %}
 		<div id="myChart" style="width:100%; height:400px;"></div>
 	</div>

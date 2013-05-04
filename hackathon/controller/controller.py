@@ -1,5 +1,5 @@
 import socket, sys
-from ..models import Tier
+from ..models import Tier, Turn, Device, Region
 from django.conf import settings
 
 def run(port=sys.argv[1]):
@@ -8,16 +8,22 @@ def run(port=sys.argv[1]):
         costs = connection.recv(4096)
         costs = costs.strip('COSTS ').split(' ')
         generate_cost_models(costs)
-        # Generate costs table for region
+        generate_region_models()
         
         # Begin the game
         connection.send('START')
         
         #while True:
+        # Generate the turn model
+        turn = Turn()
+        turn.save()
+        
         config = connection.recv(4096)
             #if not 'END' in config:
         config = config.strip('CONFIG ').split(' ')
-        print config
+        
+        turn.config,add(generate_config_model(config))
+        turn.save()
         connection.send('RECD')
         demand = connection.recv(4096)
         demand = demand.strip('DEMAND ').split(' ')
@@ -64,6 +70,37 @@ def generate_cost_models(costs):
     tier_db.tier = 'd'
     tier_db.cost = int(cost_db)
     tier_db.save()
+    
+def generate_region_models():
+    Region.objects.all().delete()
+    
+    na_region = Region()
+    na_region.region = 'n'
+    na_region.save()
+    
+    e_region = Region()
+    e_region.region = 'e'
+    e_region.save()
+    
+    a_region = Region()
+    a_region.region = 'a'
+    a_region.save()
+    
+    
+def generate_config_model(config):
+    
+    devices = []
+    
+    for region in Region.objects.all():
+        web_device = Device()
+        web_device.tier = Tier.objects.get(tier='w')
+        web_device.region = region
+        web_device.count = config[list(Region.objects.all()).index(region)/3]
+        web_device.save()
+        devices.append(web_device)
+        
+    return devices
+    
 
 def connect(port):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
