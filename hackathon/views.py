@@ -11,7 +11,7 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render_to_response, get_object_or_404
-from models import Tier, Device, Region
+from models import Tier, Device, Region, Turn
 from controller.controller import run
 
 def index(request):

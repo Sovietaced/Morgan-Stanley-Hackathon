@@ -48,12 +48,13 @@ class Profit(models.Model):
 	potential = models.IntegerField(db_index=True)
 	
 class Turn(models.Model):
-	config = models.ManyToManyField(Device, related_name='cfg', verbose_name='current distribution')
-	demands = models.ManyToManyField(Demand, verbose_name="list of demands")
-	distribution = models.ManyToManyField(Device, related_name='distribution', verbose_name="distribution of the last turn")
-	profit = models.ForeignKey(Profit, db_index=True)
-	control = models.ManyToManyField(Device, related_name='control',verbose_name="our move")
-	revenue_cents = models.IntegerField(db_index=True)
+
+	config = models.ManyToManyField(Device, null=True, blank=True, related_name='cfg', verbose_name='current distribution')
+	demands = models.ManyToManyField(Demand, null=True, blank=True, verbose_name="list of demands")
+	distribution = models.ManyToManyField(Device, null=True, blank=True, related_name='distribution', verbose_name="distribution of the last turn")
+	profit = models.ForeignKey(Profit, null=True, blank=True, db_index=True)
+	control = models.ManyToManyField(Device, null=True, blank=True, related_name='control',verbose_name="our move")
+	revenue_cents = models.IntegerField(null=True, blank=True, db_index=True)
 	
 	def __unicode__(self):
 		return 'swag'
