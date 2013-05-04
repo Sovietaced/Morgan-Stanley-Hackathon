@@ -27,8 +27,8 @@ def get_turn_data(request, id=1):
 
 
 def test(request):
-	myPort = 57013
-	run(myPort)
+	
+	run(23493)
 	
 	turns = Turn.objects.all()
 	tiers = Tier.objects.all()

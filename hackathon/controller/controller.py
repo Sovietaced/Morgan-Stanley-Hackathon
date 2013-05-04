@@ -3,10 +3,8 @@ from datetime import datetime
 from ..models import Tier, Turn, Device, Region, Profit, Demand
 from django.conf import settings
 from multiprocessing.dummy import Pool
-import threading, thread
-threading._DummyThread._Thread__stop = lambda x: 42
 
-def run(port=sys.argv[1]):
+def run(port):
     connection = connect(port)
     if connection:
         costs = connection.recv(4096)
@@ -19,7 +17,7 @@ def run(port=sys.argv[1]):
         connection.send('START')
                 
         # Run this shit on a new thread!
-        pool = Pool(processes=4)  
+        pool = Pool(processes=1)  
         pool.apply_async(start, [connection])     
     
 def start(connection):
@@ -177,7 +175,7 @@ def generate_profit_model(profit):
 def connect(port):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect(('67.202.15.69', int(port)))
-    s.send('INIT brogrammers')
+    s.send('INIT StorganManley')
     s.recv(4096)
     s.send('RECD')
     return s

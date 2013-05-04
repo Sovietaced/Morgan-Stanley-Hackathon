@@ -3,7 +3,7 @@ from datetime import datetime
 
 
 def run():
-    connection = connect(57013)
+    connection = connect(23493)
 
     if connection:
         print 'swag'
@@ -11,15 +11,19 @@ def run():
         connection.send('START')
             
         # Run this shit on a new thread!
-        start(connection)
+        thread.start_new_thread(start, (connection,))
         
 def connect(port):
     print 'we startin'
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect(('67.202.15.69', int(port)))
-    s.send('INIT brogrammers')
-    s.recv(4096)
-    s.send('RECD')
+    print 'sconnecting'
+    print s.connect(('67.202.15.69', port))
+    print 'sending'
+    print s.send('INIT StorganManley')
+    print 'receiving'
+    print s.recv(4096)
+    print 'sending recd'
+    print s.send('RECD')
     return s
 
 def start(connection):
