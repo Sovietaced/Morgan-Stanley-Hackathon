@@ -157,20 +157,42 @@ $(document).ready(function(){
 	});
 
 	$('.tablesorter').tablesorter();
+	var startGameButton = $('#start_game_button'),
+		speedUpButton = $('#speed_up_button'),
+		slowDownButton = $('#slow_down_button'),
+		stopGameButton = $('#stop_game_button');
 
-	$('#start_game_button').on('click', function(e) {
+	startGameButton.on('click', function(e) {
+		var el = $(this);
+		enableGameControls([speedUpButton, slowDownButton, stopGameButton]);
+		disableGameControls([startGameButton]);
+	});
+
+	speedUpButton.on('click', function(e) {
 		var el = $(this);
 	});
 
-	$('#speed_up_button').on('click', function(e) {
+	slowDownButton.on('click', function(e) {
 		var el = $(this);
 	});
 
-	$('#slow_down_button').on('click', function(e) {
+	stopGameButton.on('click', function(e) {
 		var el = $(this);
+		disableGameControls([speedUpButton, slowDownButton, stopGameButton]);
+		enableGameControls([startGameButton]);
 	});
 
-	$('#stop_game_button').on('click', function(e) {
-		var el = $(this);
-	});
+	var enableGameControls = function(btns) {
+		$.each(btns, function(idx, val) {
+			val.removeClass('disabled').tooltip('disable');
+		});
+	}
+
+	var disableGameControls = function(btns) {
+		$.each(btns, function(idx, val) {
+			val.addClass('disabled').tooltip('enable');
+		});
+	}
+
+	$('.twipsy').tooltip();
 });
