@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from django.db import models
 	
 
@@ -53,13 +54,3 @@ class Turn(models.Model):
 	profit = models.ForeignKey(Profit, db_index=True)
 	control = models.ManyToManyField(Device, related_name='control',verbose_name="our move")
 	revenue_cents = models.IntegerField(db_index=True)
-
-	
-
-	
-
-
-	
-
-	
-
