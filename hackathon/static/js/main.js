@@ -4,6 +4,9 @@ $(document).ready(function(){
 			renderTo: 'myChart',
 			type: 'area'
 		},
+		credits : {
+			enabled : false
+		},
 		title: {
 			text: 'Hermes'
 		},
@@ -26,7 +29,7 @@ $(document).ready(function(){
 			data: [23,65,13,87,12,56,76,23,43,12,76,88]
 		}]
 	});
-	//console.log(chart.series[0].data.);
+	// MASTER TROLE 2013
 	setInterval(function() {
 		var newData1 = [],
 			newData2 = [],
