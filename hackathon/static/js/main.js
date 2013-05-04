@@ -117,33 +117,26 @@ $(document).ready(function(){
 		yAxis: {
 			min: 0,
 			title: {
-				text: 'Percentage of Total Profit'
-			}
-		},
-		plotOptions: {
-			column: {
-				stacking: 'normal'
-			}
-		},
-		tooltip: {
-			formatter: function() {
-				return '<b>'+ this.x +'</b><br/>'+
-					this.series.name +': '+ this.y +'<br/>'+
-					'Total: '+ this.point.stackTotal + '<br/>'
+				text: 'Transactions'
 			}
 		},
 		series: [{
 			name: 'Demand',
-			color: '#E74C3C',
-			data: [0,1,4,4,2,10,4,0,1]
+			data: [95,300,650,175,376,987,43,80,100]
 		},{
 			name: 'Supply',
-			data: [20,40,50,50,50,50,50,20,10]
+			data: [180,400,1000,180,400,1000,180,400,1000]
 		}]
 	});
 
 	// Allows for the dragging and dropping of dashboard components
-	$("#sortable_container").sortable();
+	$("#sortable_container").sortable({
+		update: function(event, ui) {
+			$('[data-spy="scroll"]').each(function () {
+				$(this).scrollspy('refresh');
+			});
+		}
+	});
 
 	// Make the links pretty when you click them
 	var nav_links = $('.nav').find('li');
@@ -164,4 +157,42 @@ $(document).ready(function(){
 	});
 
 	$('.tablesorter').tablesorter();
+	var startGameButton = $('#start_game_button'),
+		speedUpButton = $('#speed_up_button'),
+		slowDownButton = $('#slow_down_button'),
+		stopGameButton = $('#stop_game_button');
+
+	startGameButton.on('click', function(e) {
+		var el = $(this);
+		enableGameControls([speedUpButton, slowDownButton, stopGameButton]);
+		disableGameControls([startGameButton]);
+	});
+
+	speedUpButton.on('click', function(e) {
+		var el = $(this);
+	});
+
+	slowDownButton.on('click', function(e) {
+		var el = $(this);
+	});
+
+	stopGameButton.on('click', function(e) {
+		var el = $(this);
+		disableGameControls([speedUpButton, slowDownButton, stopGameButton]);
+		enableGameControls([startGameButton]);
+	});
+
+	var enableGameControls = function(btns) {
+		$.each(btns, function(idx, val) {
+			val.removeClass('disabled').tooltip('disable');
+		});
+	}
+
+	var disableGameControls = function(btns) {
+		$.each(btns, function(idx, val) {
+			val.addClass('disabled').tooltip('enable');
+		});
+	}
+
+	$('.twipsy').tooltip();
 });
