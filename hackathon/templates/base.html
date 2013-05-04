@@ -5,8 +5,8 @@
 		<meta name="author" content="Bob Nisco and Jason Parraga">
 		<meta name="description" content="Marist College Hackathon Spring 2013 Project">
 
-		<link rel="stylesheet" href="/static/css/flat-ui.css" />
 		<link rel="stylesheet" href="/static/css/bootstrap.css" />
+		<link rel="stylesheet" href="/static/css/flat-ui.css" />
 		<title>MS Hackathon</title>
 	</head>
 
@@ -16,22 +16,43 @@
 				<div class="span12">
 					<div class="navbar navbar-inverse">
 						<div class="navbar-inner">
-						  <a class="brand" href="#">Morgan Stanley Hackathon</a>
-						  <ul class="nav">
-							<li class="active"><a href="#">Home</a></li>
-							<!-- <li><a href="#">Link</a></li>
-							<li><a href="#">Link</a></li>
-							-->
-						  </ul>
+							<div class="container">
+								<button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+									<span class="icon-bar"></span>
+									<span class="icon-bar"></span>
+									<span class="icon-bar"></span>
+								</button>
+								<div class="nav-collapse collapse">
+									<ul class="nav">
+										<li><a href="#">Morgan Stanley Hackathon</a></li>
+										<li class="active"><a href="/">Dashboard</a></li>
+									</ul>
+								</div>
+							</div>
 						</div>
-					  </div>
+					</div>
 				</div>
 			</div>
+			<div class="row">
 				{% block content %}
 				{% endblock %}
+			</div>
 		</div>
-		<footer class="footer">
+		<footer>
+			<div class="container">
+				<div class="row">
+					<div class="span7">
+						<h3 class="footer-title">&copy; 2013 Vin Raia, <a href="http://jasonparraga.com">Jason Parraga</a>, <a href="http://bobnisco.com">Bob Nisco</a></h3>
+						<p>Built for the Marist College Spring 2013 Hackathon sponsored by Morgan Stanley</p>
+						<p><a href="https://github.com/Sovietaced/Morgan-Stanley-Hackathon">Source on GitHub</a> |
+							<a href="https://ms-hackathon.herokuapp.com/">Live on Heroku</a>
+						</p>
+					</div>
+				</div>
+			</div>
 		</footer>
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+		<script src="/static/js/Chart.min.js"></script>
+		<script src="/static/js/main.js"></script>
 	</body>
 </html>
