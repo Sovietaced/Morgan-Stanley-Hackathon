@@ -6,3 +6,9 @@
 	color: #E74C3C;
 	font-size: 1.5em;
 }
+.navbar .navbar-inner {
+	border-radius: 0px;
+}
+.container {
+	margin-top: 45px;
+}

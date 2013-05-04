@@ -101,4 +101,14 @@ $(document).ready(function(){
 	});
 
 	$("#sortable_container").sortable();
+
+	var nav_links = $('.nav').find('li');
+	$('.nav').on('click', 'a', function(e) {
+		var el = $(this),
+			parent = el.parent();
+		$.each(nav_links, function(idx, val) {
+			$(val).removeClass('active');
+		});
+		parent.addClass('active');
+	});
 });

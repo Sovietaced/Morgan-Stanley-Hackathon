@@ -13,24 +13,26 @@
 	</head>
 
 	<body>
-		<div class="container">
-			<div class="navbar navbar-inverse">
-				<div class="navbar-inner">
-					<div class="container">
-						<button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-							<span class="icon-bar"></span>
-							<span class="icon-bar"></span>
-							<span class="icon-bar"></span>
-						</button>
-						<div class="nav-collapse collapse">
-							<ul class="nav">
-								<li><a href="/">Morgan Stanley Hackathon</a></li>
-								<li class="active"><a href="/">Dashboard</a></li>
-							</ul>
-						</div>
-					</div>
+		<div class="navbar navbar-inverse navbar-fixed-top">
+			<div class="navbar-inner">
+				<button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<div class="nav-collapse collapse">
+					<ul class="nav">
+						<li class="active"><a href="/">Morgan Stanley Hackathon</a></li>
+						<li><a href="#game_controls">Game Controls</a></li>
+						<li><a href="#total_counts">Current Configuration</a></li>
+						<li><a href="#demand_by_region">Demand By Region</a></li>
+						<li><a href="#total_profit">Total Profit</a></li>
+						<li><a href="#error_log">Error Log</a></li>
+					</ul>
 				</div>
 			</div>
+		</div>
+		<div class="container">
 				{% block content %}
 				{% endblock %}
 		</div>
