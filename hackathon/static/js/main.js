@@ -117,28 +117,15 @@ $(document).ready(function(){
 		yAxis: {
 			min: 0,
 			title: {
-				text: 'Percentage of Total Profit'
-			}
-		},
-		plotOptions: {
-			column: {
-				stacking: 'normal'
-			}
-		},
-		tooltip: {
-			formatter: function() {
-				return '<b>'+ this.x +'</b><br/>'+
-					this.series.name +': '+ this.y +'<br/>'+
-					'Total: '+ this.point.stackTotal + '<br/>'
+				text: 'Transactions'
 			}
 		},
 		series: [{
 			name: 'Demand',
-			color: '#E74C3C',
-			data: [0,1,4,4,2,10,4,0,1]
+			data: [95,300,650,175,376,987,43,80,100]
 		},{
 			name: 'Supply',
-			data: [20,40,50,50,50,50,50,20,10]
+			data: [180,400,1000,180,400,1000,180,400,1000]
 		}]
 	});
 
