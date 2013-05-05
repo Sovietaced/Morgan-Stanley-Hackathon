@@ -138,35 +138,31 @@ def determine_moving_averages(turn):
         for d in turn.config.all():
             if d.region == ma.region:
                 resources.append(d.count)
-        
+
         # Dynamically generates break even cost
         revenue = Tier.objects.get(tier='w').revenue
         # Convert to cents since server costs are in dollars..
         revenue = revenue * .01
-        
+
         # Get cost for each tier
         web_cost = Tier.objects.get(tier='w').cost
         java_cost = Tier.objects.get(tier='j').cost
         db_cost = Tier.objects.get(tier='d').cost
-        
-        # Calculate break even cost
-        web_break = int(web_cost / revenue)
-        java_break = int(java_cost / revenue)
-        db_break = int(db_cost / revenue)
-        
-        # Assign 
-        WEB_WEIGHT = 180 + web_break
-        ma.web_resources = resources[0] * WEB_WEIGHT # 180 +33
-        JAVA_WEIGHT = 400 + java_break
-        ma.java_resources = resources[1] * JAVA_WEIGHT
-        DB_WEIGHT = 1000 + db_break
-        ma.db_resources = resources[2] * DB_WEIGHT
-<<<<<<< HEAD
 
-=======
-        
+        # Calculate break even cost
+        WEB_BREAK = int(web_cost / revenue)
+        JAVE_BREAK = int(java_cost / revenue)
+        DB_BREAK = int(db_cost / revenue)
+
+        # Assign
+        WEB_WEIGHT = 180 + WEB_BREAK
+        ma.web_resources = resources[0] * WEB_WEIGHT # 180 +33
+        JAVA_WEIGHT = 400 + JAVA_BREAK
+        ma.java_resources = resources[1] * JAVA_WEIGHT
+        DB_WEIGHT = 1000 + DB_BREAK
+        ma.db_resources = resources[2] * DB_WEIGHT
+
         # Evaluate resource weighting based on multiple average calculations
->>>>>>> 1ae732d1ef569bff8485f983b6f07894429cb36f
         RESOURCE_WEIGHT = 1
         if turn.id > 2:
             # Get 2 turns ago
@@ -177,12 +173,8 @@ def determine_moving_averages(turn):
             for m in mass:
                 if m.region == ma.region:
                     first_ma = m
-<<<<<<< HEAD
 
-=======
-                    
             # Get 1 turn ago
->>>>>>> 1ae732d1ef569bff8485f983b6f07894429cb36f
             second_turn = Turn.objects.get(id=turn.id-1)
             mass = second_turn.moving_averages.all()
 
@@ -190,12 +182,8 @@ def determine_moving_averages(turn):
             for m in mass:
                 if m.region == ma.region:
                     second_ma = m
-<<<<<<< HEAD
 
-=======
-            
             # Calculate the rising resource weight
->>>>>>> 1ae732d1ef569bff8485f983b6f07894429cb36f
             if first_ma.short_term < first_ma.long_term and second_ma.short_term > second_ma.long_term:
                 RESOURCE_WEIGHT = 2.0
 
@@ -209,11 +197,7 @@ def determine_moving_averages(turn):
             if web_needed > 0:
                 ma.web_needed = web_needed
             else:
-<<<<<<< HEAD
-                ma.web_needed =  int(math.ceil((ma.transactions - ma.web_resources) / (214.0/2)))
-=======
-                ma.web_needed =  int(math.ceil((ma.transactions - ma.web_resources) / float(WEB_WEIGHT)))
->>>>>>> 1ae732d1ef569bff8485f983b6f07894429cb36f
+                ma.web_needed =  int(math.ceil((ma.transactions - ma.web_resources) / (float(WEB_WEIGHT)/2)))
                 if ma.web_needed == 0:
                     pass
                 else:
@@ -231,7 +215,7 @@ def determine_moving_averages(turn):
                 ma.java_needed = java_needed
             else:
                 # Using ceil here because its all fucked up with negative numbers in python
-                ma.java_needed = int(math.ceil(((ma.transactions * RESOURCE_WEIGHT) - ma.java_resources)/ (JAVA_WEIGHT/2)))
+                ma.java_needed = int(math.ceil(((ma.transactions * RESOURCE_WEIGHT) - ma.java_resources) / (float(JAVA_WEIGHT)/2)))
 
                 if ma.java_needed == 0:
                     pass
