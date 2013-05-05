@@ -60,12 +60,12 @@ def start(connection):
             profit = profit.strip('PROFIT ').split(' ')
             profit = [p for p in profit if p != '']
             turn.profit = generate_profit_model(profit)
-            
+
             turn.save()
             # Determine Moving Averages
             turn = determine_moving_averages(turn)
             turn.save()
-            
+
             logger.error('test')
             nums = []
             for ma in turn.moving_averages.all():
@@ -80,53 +80,51 @@ def start(connection):
     connection.send('STOP')
 
 def determine_moving_averages(turn):
-    
     SMOOTH = 2.0 / (1+2)
     demands = turn.demands
-    
+
     try:
         last_turn = Turn.objects.get(id=(turn.id-1))
     except Turn.DoesNotExist:
         last_turn = None
-    
+
     mas = []
     for demand in demands.all():
         ma = MovingAverage()
         ma.region = demand.region
         ma.transactions = demand.count
-        
+
         if last_turn:
             last_demand  = None
             last_ma = None
-            for d in last_turn.demands.all():   
+            for d in last_turn.demands.all():
                 if d.region == demand.region:
                     last_demand = d
-            
-            for m in last_turn.moving_averages.all():   
+
+            for m in last_turn.moving_averages.all():
                 if m.region == demand.region:
                     last_ma = m
-                
+
             ma.short_term = last_demand.count
             ma.long_term = (ma.transactions * SMOOTH) + (last_ma.long_term * (1 - SMOOTH))
         else:
             ma.short_term = ma.transactions
             ma.long_term = ma.transactions
-            
+
         ma.web_needed = ma.transactions / 180
         resources = None
         for d in turn.config.all():
             if d.region == ma.region and d.tier.tier == 'w':
                 resources = d.count
-                
         ma.web_resources = (resources * 180)
-        
+
         ma.save()
         mas.append(ma)
-     
+
     turn.moving_averages = mas
     turn.save()
     return turn
-        
+
 def generate_cost_models(costs):
 
     # CLean the DB before we start a new game

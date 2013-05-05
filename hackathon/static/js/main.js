@@ -160,20 +160,55 @@ $(document).ready(function(){
 	var startGameButton = $('#start_game_button'),
 		speedUpButton = $('#speed_up_button'),
 		slowDownButton = $('#slow_down_button'),
-		stopGameButton = $('#stop_game_button');
+		stopGameButton = $('#stop_game_button'),
+		currentNum = 1;
+		nextTurnButton = $('#next_turn_button');
 
 	startGameButton.on('click', function(e) {
 		var el = $(this);
 		if (!el.hasClass('disabled')) {
 			$.post('/game/start/', function(response) {
 				$('#game_controls').find('.response').html(make_message(response.status, response.message));
-				if (response.status === 'success') {
+				//if (response.status === 'success') {
 					enableGameControls([speedUpButton, slowDownButton, stopGameButton]);
 					disableGameControls([startGameButton]);
-				}
-			},'json')
+					//getNextTurn(1);
+				//}
+			},'json');
 		}
 	});
+
+	nextTurnButton.on('click', function(e) {
+		e.preventDefault();
+		getTurn(currentNum);
+	});
+
+	var getTurn = function(num) {
+		$.post('/turn/' + num, function(response) {
+			if (response) {
+				console.log(response);
+				currentNum += 1;
+				var profitSpan = $('.positive_profit'),
+					profitResponse = JSON.parse(response.profit)[0];
+				console.log(profitResponse);
+				setTotalProfit(convertToDollars(profitResponse.fields.total_profit));
+			}
+		},'json');
+	}
+
+	var convertToDollars = function(cents) {
+		return (parseFloat(cents)/100).toFixed(2);
+	}
+
+	var setTotalProfit = function(dollars) {
+		var profit = $('.profit');
+		if (dollars >= 0) {
+			profit.removeClass('negative_profit').addClass('positive_profit');
+		} else {
+			profit.removeClass('positive_profit').addClass('negative_profit');
+		}
+		profit.html('$' + dollars);
+	}
 
 	speedUpButton.on('click', function(e) {
 		var el = $(this);
@@ -184,7 +219,7 @@ $(document).ready(function(){
 	});
 
 	stopGameButton.on('click', function(e) {
-		var el = $(this);
+		var el = $(this);g
 		disableGameControls([speedUpButton, slowDownButton, stopGameButton]);
 		enableGameControls([startGameButton]);
 	});
