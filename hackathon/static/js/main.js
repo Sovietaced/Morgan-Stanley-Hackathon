@@ -174,6 +174,13 @@ $(document).ready(function(){
 					disableGameControls([startGameButton]);
 					//getNextTurn(1);
 				//}
+				
+				if (response.status === 'success') {
+					enableGameControls([speedUpButton, slowDownButton, stopGameButton]);
+					disableGameControls([startGameButton]);
+					//getNextTurn(1);
+					startGameRefresh = setInterval(getTurn, timeBetween);
+				}
 			},'json');
 		}
 	});
