@@ -92,11 +92,11 @@ $(document).ready(function(){
 		series: [{
 			name: 'Loss',
 			color: '#E74C3C',
-			data: []
+			data: [0]
 		},{
 			name: 'Profit',
 			color: '#27AE60',
-			data: []
+			data: [0]
 		}]
 	});
 
@@ -236,6 +236,7 @@ $(document).ready(function(){
 				setTotalProfit(convertToDollars(response.profit[0].fields.total_profit));
 				setConfigGraph(response.config);
 				setDemandByRegionGraph(response.demands);
+				setTotalProfitGraph(response.profit[0].fields.total_potential);
 			}
 		},'json')
 		.error(function() {
@@ -313,6 +314,12 @@ $(document).ready(function(){
 		demandByRegion.series[0].setData([na]);
 		demandByRegion.series[1].setData([eu]);
 		demandByRegion.series[2].setData([ap]);
+	};
+
+	var setTotalProfitGraph = function(percent) {
+		var loss = 100 - percent;
+		totalProfit.series[0].setData([loss]);
+		totalProfit.series[1].setData([percent]);
 	}
 
 	var enableGameControls = function(btns) {
