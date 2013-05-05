@@ -74,18 +74,18 @@ def start(connection):
             # Generate output
             nums = []
             for ma in turn.moving_averages.all():
-                if(turn.id%2 == 0):
+                if(turn.id%3 == 0):
                     nums.append(str(ma.web_needed))
                 else:
                     nums.append('0')
             for ma in turn.moving_averages.all():
-                if(turn.id%4 == 0):
+                if(turn.id%5 == 0):
                     nums.append(str(ma.java_needed))
                 else:
                     nums.append('0')
 
             for ma in turn.moving_averages.all():
-                if turn.id%8 == 0:
+                if turn.id%9 == 0:
                     if ma.region.region == 'e' and ma.db_needed < 0:
                         nums.append('0')
                     else:
@@ -220,7 +220,7 @@ def determine_moving_averages(turn):
                     ma.java_needed = 0
 
         if ma.db_resources == 0:
-            if ma.transactions > (DB_WEIGHT/2.2):
+            if ma.transactions > (DB_WEIGHT/2):
                 ma.db_needed = 1
             else:
                 ma.db_needed = 0
