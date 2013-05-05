@@ -162,6 +162,8 @@ $(document).ready(function(){
 		slowDownButton = $('#slow_down_button'),
 		stopGameButton = $('#stop_game_button'),
 		nextTurnButton = $('#next_turn_button'),
+		resumeGameButton = $('#resume_game_button'),
+		clearErrorLogButton = $('#clear_error_log_button'),
 		currentNum = 1,
 		timeBetween = 1000,
 		startGameRefresh = 0;
@@ -174,7 +176,6 @@ $(document).ready(function(){
 				if (response.status === 'success') {
 					enableGameControls([speedUpButton, slowDownButton, stopGameButton]);
 					disableGameControls([startGameButton]);
-					//getNextTurn(1);
 					startGameRefresh = setInterval(getTurn, timeBetween);
 				}
 			},'json');
@@ -208,6 +209,18 @@ $(document).ready(function(){
 		clearInterval(startGameRefresh);
 	});
 
+	resumeGameButton.on('click', function(e) {
+		e.preventDefault();
+		enableGameControls([speedUpButton, slowDownButton, stopGameButton]);
+		disableGameControls([startGameButton]);
+		startGameRefresh = setInterval(getTurn, timeBetween);
+	});
+
+	clearErrorLogButton.on('click', function(e) {
+		e.preventDefault();
+		$('#error_log').find('tbody').children().empty();
+	});
+
 	var setGameLoopTimer = function() {
 		clearInterval(startGameRefresh);
 		startGameRefresh = setInterval(getTurn, timeBetween);
@@ -224,8 +237,23 @@ $(document).ready(function(){
 				setConfigGraph(response.config);
 				setDemandByRegionGraph(response.demands);
 			}
-		},'json');
+		},'json')
+		.error(function() {
+			var currentdate = new Date(),
+					datetime = currentdate.getDate() + "/"
+					+ (currentdate.getMonth()+1)  + "/"
+					+ currentdate.getFullYear() + " @ "
+					+ currentdate.getHours() + ":"
+					+ currentdate.getMinutes() + ":"
+					+ currentdate.getSeconds();
+				addError("Could not retrieve turn " + currentNum + ". Have we reached the end of the game?", datetime);
+		});
 	};
+
+	var addError = function(message, timestamp) {
+		var tbody = $('#error_log').find('tbody');
+		tbody.append('<tr><td>' + message + '</td><td>' + timestamp + '</td></tr>');
+	}
 
 	var deserializeAgain = function(ar) {
 		// Workaround method for having to serialize each element of array
