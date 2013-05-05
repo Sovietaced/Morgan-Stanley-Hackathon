@@ -233,7 +233,7 @@ $(document).ready(function(){
 				console.log(response);
 				currentNum += 1;
 				var profitSpan = $('.positive_profit');
-				setTotalProfit(convertToDollars(response.profit[0].fields.total_profit));
+				setTotalProfit(response.profit[0].fields.total_profit);
 				setConfigGraph(response.config);
 				setDemandByRegionGraph(response.demands);
 				setTotalProfitGraph(response.profit[0].fields.total_potential);
@@ -264,10 +264,6 @@ $(document).ready(function(){
 			result[idx] = JSON.parse(val);
 		});
 		return result;
-	};
-
-	var convertToDollars = function(cents) {
-		return (parseFloat(cents)/100).toFixed(2);
 	};
 
 	var setTotalProfit = function(dollars) {
