@@ -18,9 +18,8 @@ def run(port):
         connection.send('START')
 
         # Run this shit on a new thread!
-        #pool = Pool(processes=4)
-        #pool.apply_async(start, [connection])
-        start(connection)
+        pool = Pool(processes=4)
+        pool.apply_async(start, [connection])
 
 def start(connection):
     day_str = None

@@ -11,4 +11,5 @@ urlpatterns = patterns('',
     url(r'^test/', 'hackathon.views.test', name='test'),
     url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT}),
     url(r'^turn/(?P<id>[^\.]+)', 'hackathon.views.get_turn_data', name='get_turn'),
+    url(r'^game/start/', 'hackathon.views.start_game'),
 )
