@@ -164,8 +164,15 @@ $(document).ready(function(){
 
 	startGameButton.on('click', function(e) {
 		var el = $(this);
-		enableGameControls([speedUpButton, slowDownButton, stopGameButton]);
-		disableGameControls([startGameButton]);
+		if (!el.hasClass('disabled')) {
+			$.post('/game/start/', function(response) {
+				$('#game_controls').find('.response').html(make_message(response.status, response.message));
+				if (response.status === 'success') {
+					enableGameControls([speedUpButton, slowDownButton, stopGameButton]);
+					disableGameControls([startGameButton]);
+				}
+			},'json')
+		}
 	});
 
 	speedUpButton.on('click', function(e) {
@@ -195,4 +202,12 @@ $(document).ready(function(){
 	}
 
 	$('.twipsy').tooltip();
+
+	var make_message = function (status, message) {
+		if (status === 'success') {
+			return '<div class="alert alert-success"><a class="close" data-dismiss="alert" href="#">&times;</a>' + message + '</div>';
+		} else {
+			return '<div class="alert alert-error"><a class="close" data-dismiss="alert" href="#">&times;</a>' + message + '</div>';
+		}
+	};
 });

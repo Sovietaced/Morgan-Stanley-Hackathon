@@ -1,5 +1,6 @@
 # Create your views here.
 import sys
+import json
 import socket
 import datetime
 
@@ -25,10 +26,24 @@ def get_turn_data(request, id=1):
 	else:
 		return HttpResponseNotFound('<h1>Turn not found</h1>')
 
+def start_game(request):
+	"""Starts the game"""
+	result = {
+		'status' : 'error',
+		'message' : 'Could not start the game. Please try again'
+	}
+	successful_start = run(57012)
+	#successful_start = True
+	if successful_start:
+		result = {
+			'status' : 'success',
+			'message' : 'Successfully started the game!'
+		}
+	return HttpResponse(json.dumps(result), content_type="application/json")
 
 def test(request):
 
-	run(23493)
+	run(57012)
 
 	turns = Turn.objects.all()
 	tiers = Tier.objects.all()

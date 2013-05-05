@@ -15,3 +15,6 @@
 .tablesorter th {
 	cursor: pointer;
 }
+#game_controls .response {
+	margin-top: 7px;
+}
