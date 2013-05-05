@@ -166,7 +166,7 @@ def determine_moving_averages(turn):
                     second_ma = m
             
             if first_ma.short_term < first_ma.long_term and second_ma.short_term > second_ma.long_term:
-                RESOURCE_WEIGHT = 1.25
+                RESOURCE_WEIGHT = 1.5
                 
         if ma.web_resources == 0:
             if ma.transactions * RESOURCE_WEIGHT > 33:
@@ -178,7 +178,7 @@ def determine_moving_averages(turn):
             if web_needed > 0:
                 ma.web_needed = web_needed
             else:
-                ma.web_needed =  int(math.ceil((ma.transactions * RESOURCE_WEIGHT- ma.web_resources) / 214.0))
+                ma.web_needed =  int(math.ceil((ma.transactions - ma.web_resources) / 214.0))
                 if ma.web_needed == 0:
                     pass
                 else:
