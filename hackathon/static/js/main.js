@@ -100,35 +100,6 @@ $(document).ready(function(){
 		}]
 	});
 
-	var demandVsSupply = new Highcharts.Chart({
-		chart: {
-			renderTo: 'demand_vs_supply',
-			type: 'column'
-		},
-		credits : {
-			enabled : false
-		},
-		title: {
-			text: 'Demand vs. Supply'
-		},
-		xAxis: {
-			categories: ['NA Web','NA Java','NA DB','EU Web','EU Java','EU DB','AP Web','AP Java','AP DB'],
-		},
-		yAxis: {
-			min: 0,
-			title: {
-				text: 'Transactions'
-			}
-		},
-		series: [{
-			name: 'Demand',
-			data: []
-		},{
-			name: 'Supply',
-			data: []
-		}]
-	});
-
 	// Allows for the dragging and dropping of dashboard components
 	$("#sortable_container").sortable({
 		update: function(event, ui) {
