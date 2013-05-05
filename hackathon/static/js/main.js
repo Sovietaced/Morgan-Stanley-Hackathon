@@ -161,20 +161,23 @@ $(document).ready(function(){
 		speedUpButton = $('#speed_up_button'),
 		slowDownButton = $('#slow_down_button'),
 		stopGameButton = $('#stop_game_button'),
-		currentNum = 1;
-		nextTurnButton = $('#next_turn_button');
+		nextTurnButton = $('#next_turn_button'),
+		currentNum = 1,
+		timeBetween = 1000,
+		startGameRefresh = 0;
 
 	startGameButton.on('click', function(e) {
 		var el = $(this);
 		if (!el.hasClass('disabled')) {
-			$.post('/game/start/', function(response) {
-				$('#game_controls').find('.response').html(make_message(response.status, response.message));
+			//$.post('/game/start/', function(response) {
+			//	$('#game_controls').find('.response').html(make_message(response.status, response.message));
 				//if (response.status === 'success') {
 					enableGameControls([speedUpButton, slowDownButton, stopGameButton]);
 					disableGameControls([startGameButton]);
 					//getNextTurn(1);
+					startGameRefresh = setInterval(getTurn, timeBetween);
 				//}
-			},'json');
+			//},'json');
 		}
 	});
 
@@ -184,21 +187,34 @@ $(document).ready(function(){
 	});
 
 	speedUpButton.on('click', function(e) {
+		e.preventDefault();
 		var el = $(this);
+		timeBetween = timeBetween/2;
+		setGameLoopTimer();
 	});
 
 	slowDownButton.on('click', function(e) {
+		e.preventDefault();
 		var el = $(this);
+		timeBetween = timeBetween*2;
+		setGameLoopTimer();
 	});
 
 	stopGameButton.on('click', function(e) {
-		var el = $(this);g
+		e.preventDefault();
+		var el = $(this);
 		disableGameControls([speedUpButton, slowDownButton, stopGameButton]);
 		enableGameControls([startGameButton]);
+		clearInterval(startGameRefresh);
 	});
 
-	var getTurn = function(num) {
-		$.post('/turn/' + num, function(response) {
+	var setGameLoopTimer = function() {
+		clearInterval(startGameRefresh);
+		startGameRefresh = setInterval(getTurn, timeBetween);
+	}
+
+	var getTurn = function() {
+		$.post('/turn/' + currentNum, function(response) {
 			if (response) {
 				response = deserializeAgain(response);
 				console.log(response);
