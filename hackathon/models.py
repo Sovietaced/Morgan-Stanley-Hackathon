@@ -50,6 +50,18 @@ class Profit(models.Model):
 	def __unicode__(self):
 		return "Profit ID : " + str(self.id) + " last_profit : " + str(self.last_profit) + " last_potential : " + str(self.last_potential) + " total_profit : " + str(self.total_profit) + " total_potential : " + str(self.total_potential)
 
+class MovingAverage(models.Model):
+	
+	transactions = models.IntegerField(blank=True, null=True, db_index=True)
+	region = models.ForeignKey(Region, null=True, blank=True, db_index=True)
+	short_term = models.IntegerField(blank=True, null=True, db_index=True)
+	long_term = models.IntegerField(blank=True, null=True, db_index=True)
+	web_needed = models.IntegerField(blank=True, null=True, db_index=True)
+	web_resources = models.IntegerField(blank=True, null=True, db_index=True)
+	
+	def __unicode__(self):
+		return "Transactions : " + str(self.transactions) + " Region " + self.region.region + " Short " + str(self.short_term) + " Long " + str(self.long_term) + " Web Needed : " + str(self.web_needed)
+	
 class Turn(models.Model):
 	time = models.DateTimeField(null=True, blank=True, db_index=True)
 	config = models.ManyToManyField(Device, blank=True, related_name='cfg', verbose_name='current distribution')
@@ -62,17 +74,6 @@ class Turn(models.Model):
 	
 	def __unicode__(self):
 		return 'Time: ' + str(self.time)
-	
-class MovingAverage(models.Model):
-	
-	transactions = models.IntegerField(blank=True, null=True, db_index=True)
-	region = models.ForeignKey(Region, null=True, blank=True, db_index=True)
-	short_term = models.IntegerField(blank=True, null=True, db_index=True)
-	long_term = models.IntegerField(blank=True, null=True, db_index=True)
-	web_needed = models.IntegerField(blank=True, null=True, db_index=True)
-	
-	def __unicode__(self):
-		return str(self.id)
 	
 
 if __name__ == "__main__" and __package__ is None:

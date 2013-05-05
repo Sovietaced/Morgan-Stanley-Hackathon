@@ -3,7 +3,7 @@ from datetime import datetime
 
 
 def run():
-    connection = connect(57012)
+    connection = connect(23493)
 
     if connection:
         print 'swag'
@@ -11,7 +11,7 @@ def run():
         connection.send('START')
             
         # Run this shit on a new thread!
-        thread.start_new_thread(start, (connection,))
+        start(connection)
         
 def connect(port):
     print 'we startin'
@@ -42,8 +42,8 @@ def start(connection):
             print connection.send('CONTROL 1 1 1 1 1 1 1 1 1')
         else:
             break
-    
-    connection.send('STOP')
+    print 'sending stop'
+    print connection.send('STOP')
     
 if __name__ == "__main__":
     run()
