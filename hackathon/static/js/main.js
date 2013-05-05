@@ -237,31 +237,44 @@ $(document).ready(function(){
 				setConfigGraph(response.config);
 				setDemandByRegionGraph(response.demands);
 				setTotalProfitGraph(response.profit[0].fields.total_potential);
+				setTurnData(response.time);
 			}
 		},'json')
 		.error(function() {
-			var currentdate = new Date(),
-					datetime = currentdate.getDate() + "/"
-					+ (currentdate.getMonth()+1)  + "/"
-					+ currentdate.getFullYear() + " @ "
-					+ currentdate.getHours() + ":"
-					+ currentdate.getMinutes() + ":"
-					+ currentdate.getSeconds();
-				addError("Could not retrieve turn " + currentNum + ". Have we reached the end of the game?", datetime);
+			var currentDate = new Date();
+				addError("Could not retrieve turn " + currentNum + ". Have we reached the end of the game?", formatDate(currentDate));
 		});
+	};
+
+	var formatDate = function(currentDate) {
+		return currentDate.getDate() + "/"
+			+ (currentDate.getMonth()+1)  + "/"
+			+ currentDate.getFullYear() + " @ "
+			+ currentDate.getHours() + ":"
+			+ currentDate.getMinutes() + ":"
+			+ currentDate.getSeconds();
+	}
+
+	var setTurnData = function(currentDate) {
+		$('.turn_num').html(currentNum);
+		$('.turn_date_time').html(currentDate);
 	};
 
 	var addError = function(message, timestamp) {
 		var tbody = $('#error_log').find('tbody');
 		tbody.append('<tr><td>' + message + '</td><td>' + timestamp + '</td></tr>');
-	}
+	};
 
 	var deserializeAgain = function(ar) {
 		// Workaround method for having to serialize each element of array
 		// in the Django controller
 		var result = {};
 		$.each(ar, function(idx, val) {
-			result[idx] = JSON.parse(val);
+			if (idx !== 'time') {
+				result[idx] = JSON.parse(val);
+			} else {
+				result[idx] = val;
+			}
 		});
 		return result;
 	};
