@@ -162,6 +162,7 @@ $(document).ready(function(){
 		slowDownButton = $('#slow_down_button'),
 		stopGameButton = $('#stop_game_button'),
 		nextTurnButton = $('#next_turn_button'),
+		previousTurnButton = $('#previous_turn_button'),
 		resumeGameButton = $('#resume_game_button'),
 		clearErrorLogButton = $('#clear_error_log_button'),
 		currentNum = 1,
@@ -174,9 +175,7 @@ $(document).ready(function(){
 			$.post('/game/start/', function(response) {
 				$('#game_controls').find('.response').html(make_message(response.status, response.message));
 				if (response.status === 'success') {
-					enableGameControls([speedUpButton, slowDownButton, stopGameButton]);
-					disableGameControls([startGameButton]);
-					startGameRefresh = setInterval(getTurn, timeBetween);
+					startGame();
 				}
 			},'json');
 		}
@@ -184,6 +183,12 @@ $(document).ready(function(){
 
 	nextTurnButton.on('click', function(e) {
 		e.preventDefault();
+		getTurn(currentNum);
+	});
+
+	previousTurnButton.on('click', function(e) {
+		e.preventDefault();
+		currentNum = currentNum - 2;
 		getTurn(currentNum);
 	});
 
@@ -204,16 +209,12 @@ $(document).ready(function(){
 	stopGameButton.on('click', function(e) {
 		e.preventDefault();
 		var el = $(this);
-		disableGameControls([speedUpButton, slowDownButton, stopGameButton]);
-		enableGameControls([startGameButton]);
-		clearInterval(startGameRefresh);
+		stopGame();
 	});
 
 	resumeGameButton.on('click', function(e) {
 		e.preventDefault();
-		enableGameControls([speedUpButton, slowDownButton, stopGameButton]);
-		disableGameControls([startGameButton]);
-		startGameRefresh = setInterval(getTurn, timeBetween);
+		startGame();
 	});
 
 	clearErrorLogButton.on('click', function(e) {
@@ -221,12 +222,27 @@ $(document).ready(function(){
 		$('#error_log').find('tbody').children().empty();
 	});
 
+	var startGame = function() {
+		enableGameControls([speedUpButton, slowDownButton, stopGameButton, nextTurnButton, previousTurnButton]);
+		disableGameControls([startGameButton, resumeGameButton]);
+		startGameRefresh = setInterval(getTurn, timeBetween);
+	};
+
+	var stopGame = function() {
+		disableGameControls([speedUpButton, slowDownButton, stopGameButton]);
+		enableGameControls([startGameButton, resumeGameButton]);
+		clearInterval(startGameRefresh);
+	};
+
 	var setGameLoopTimer = function() {
 		clearInterval(startGameRefresh);
 		startGameRefresh = setInterval(getTurn, timeBetween);
-	}
+	};
 
 	var getTurn = function() {
+		if (currentNum <= 0) {
+			currentNum = 1;
+		}
 		$.post('/turn/' + currentNum, function(response) {
 			if (response) {
 				response = deserializeAgain(response);
