@@ -1,6 +1,6 @@
 import socket, sys
 from datetime import datetime
-from ..models import Tier, Turn, Device, Region, Profit, Demand
+from ..models import Tier, Turn, Device, Region, Profit, Demand, MovingAverage
 from django.conf import settings
 from multiprocessing.dummy import Pool
 
@@ -59,12 +59,53 @@ def start(connection):
             profit = profit.strip('PROFIT ').split(' ')
             profit = [p for p in profit if p != '']
             turn.profit = generate_profit_model(profit)
+            
+            # Determine Moving Averages
+            turn = determine_moving_averages(turn)
+            
             turn.save()
             connection.send('CONTROL 1 1 1 1 1 1 1 1 1')
         else:
             break
 
     connection.send('STOP')
+
+def determine_moving_averages(turn):
+    
+    SMOOTH = 2 / (1+2)
+    demands = turn.demands
+    
+    last_turn = Turn.objects.get(id=(turn.id-1))
+    
+    mas = []
+    for demand in demands:
+        ma = MovingAverage()
+        ma.region = demand.region
+        ma.transactions = demand.count
+        
+        last_demand  = None
+        for d in last_turn.demands:
+            if d.region == demand.region:
+                last_demand = d
+        
+        if last_turn:
+            ma.short_term = last_demand.count
+            ma.long_term = (ma.transactions * SMOOTH) + (last_turn.long_term * 1 - SMOOTH)
+        else:
+            ma.short_term = ma.transactions
+            ma.long_term = ma.transactions
+            
+        ma.web_needed = ma.transactions / 180
+        ma.save()
+        mas.append(ma)
+    
+    
+    turn.moving_averages = mas
+    turn.save()
+    return turn
+        
+            
+    
 
 def generate_cost_models(costs):
 
