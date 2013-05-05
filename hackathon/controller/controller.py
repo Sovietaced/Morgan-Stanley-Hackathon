@@ -28,7 +28,7 @@ def start(connection):
     while True:
         # Generate the turn model
         config = connection.recv(4096)
-        print 'config ' + config
+        print config
         if not 'END' in config:
 
             # Generate Turn model to dump stuff into
@@ -38,6 +38,8 @@ def start(connection):
             # Config Parsing
             config = config.strip('CONFIG ').split(' ')
             turn.config = generate_server_map_model(config)
+            
+            
 
             # Demand and Time Parsing
             connection.send('RECD')
@@ -136,10 +138,14 @@ def determine_moving_averages(turn):
             if d.region == ma.region:
                 resources.append(d.count)
 
-        ma.web_resources = resources[0] * 213
-        ma.java_resources = resources[1] * 467
-        # Modified
-        ma.db_resources = resources[2] * 1167
+        WEB_WEIGHT = 213
+        ma.web_resources = resources[0] * WEB_WEIGHT # 180 +33
+        JAVA_WEIGHT = 467
+        ma.java_resources = resources[1] * JAVA_WEIGHT
+        DB_WEIGHT = 1167
+        ma.db_resources = resources[2] * DB_WEIGHT
+        
+        
         
         if ma.web_resources == 0:
             if ma.transactions > 33:
@@ -147,50 +153,53 @@ def determine_moving_averages(turn):
             else:
                 ma.web_needed = 0
         else:
-            web_needed =  (ma.transactions - ma.web_resources) / 214.0
+            web_needed = (ma.transactions - ma.web_resources) / 214
             
-            print " MA TRANSACTIONS : " + str(ma.transactions)
-            print " MA WEB RESOURCES : " + str(ma.web_resources)
-            print "WEB NEEDED : " + str(web_needed)
             if web_needed > 0:
                 ma.web_needed = web_needed
             else:
-                print 'transactions : ' + str(ma.transactions) + ' \n web resources : ' + str(ma.web_resources)
-                ma.web_needed = (ma.transactions - ma.web_resources) / 214
-                print "MA WEB NEEDED : " + str(ma.web_needed)
+                ma.web_needed =  int(math.ceil((ma.transactions - ma.web_resources) / 214.0))
                 if ma.web_needed == 0:
                     pass
                 else:
                     if resources[0] + ma.web_needed <= 0:
                         ma.web_needed = 0
+                        #ma.web_needed = ma.web_needed +1
+        
         
         if ma.java_resources == 0:
-            if ma.transactions * .9 > 67:
+            if ma.transactions > 67:
                 ma.java_needed = 1
             else:
                 ma.java_needed = 0
         else:
-            java_needed = ((ma.transactions * .9) - ma.java_resources) / 468
+            java_needed = ((ma.transactions) - ma.java_resources) / JAVA_WEIGHT
             if java_needed > 0:
                 ma.java_needed = java_needed
             else:
-                ma.java_needed = int(((ma.transactions * .9) - ma.java_resources)/468)
-                if resources[1] + ma.java_needed <= 0:
-                    ma.java_needed = 0
+                # Using ceil here because its all fucked up with negative numbers in python
+                ma.java_needed = int(math.ceil(((ma.transactions) - ma.java_resources)/ JAVA_WEIGHT))
+                
+                if ma.java_needed == 0:
+                    pass
+                else:
+                    print 'we really here now'
+                    if resources[1] + ma.java_needed <= 0:
+                        ma.java_needed = 0
+                        #ma.java_needed = ma.java_needed + 1
         
         if ma.db_resources == 0:
-            #used to be 167
-            if ma.transactions * .8 > 500:
+            if ma.transactions > (DB_WEIGHT/2):
                 ma.db_needed = 1
             else:
                 ma.db_needed = 0
         else:
-            db_needed = int(((ma.transactions * .8) - ma.db_resources) / 1168)
+            db_needed = int(((ma.transactions) - ma.db_resources) / DB_WEIGHT)
             if db_needed > 0:
                 ma.db_needed = db_needed
             else:
-                ma.db_needed = ((ma.transactions * .8) - ma.db_resources)/1168
-                if resources[2] + ma.db_needed < 500:
+                ma.db_needed = ((ma.transactions) - ma.db_resources)/ DB_WEIGHT
+                if (resources[2] * DB_WEIGHT) + (ma.db_needed * DB_WEIGHT) < 500:
                     ma.db_needed = -1
                 else:
                     ma.db_needed = 0
@@ -261,7 +270,7 @@ def generate_server_map_model(server_map):
         java_device = Device()
         java_device.tier = Tier.objects.get(tier='j')
         java_device.region = region
-        java_device.count = server_map[3]
+        java_device.count = server_map[3 + list(Region.objects.all()).index(region)]
         java_device.save()
         devices.append(java_device)
 
