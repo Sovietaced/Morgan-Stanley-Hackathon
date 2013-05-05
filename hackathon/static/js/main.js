@@ -355,6 +355,9 @@ $(document).ready(function(){
 	};
 
 	var setTotalProfitGraph = function(percent) {
+		if (percent < 0) {
+			percent = 0;
+		}
 		var loss = 100 - percent;
 		totalProfit.series[0].setData([loss]);
 		totalProfit.series[1].setData([percent]);
