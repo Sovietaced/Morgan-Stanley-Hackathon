@@ -1,8 +1,7 @@
-import socket, sys
+import socket, sys, threading, logging
 from datetime import datetime
 from ..models import Tier, Turn, Device, Region, Profit, Demand, MovingAverage
 from django.conf import settings
-from multiprocessing.dummy import Pool
 import django
 
 def run(port):
@@ -18,8 +17,9 @@ def run(port):
         connection.send('START')
 
         # Run this shit on a new thread!
-        pool = Pool(processes=4)
-        pool.apply_async(start, [connection])
+
+        thread = threading.Thread(target=start, args=[connection])
+        thread.start()
 
 def start(connection):
     day_str = None
@@ -28,6 +28,9 @@ def start(connection):
         # Generate the turn model
         config = connection.recv(4096)
         if not 'END' in config:
+
+            # Get an instance of a logger
+            logger = logging.getLogger(__name__)
 
             # Generate Turn model to dump stuff into
             turn = Turn()
@@ -61,17 +64,21 @@ def start(connection):
             turn.save()
             # Determine Moving Averages
             turn = determine_moving_averages(turn)
-
             turn.save()
-            connection.send('CONTROL 1 1 1 1 1 1 1 1 1')
+
+            logger.error('test')
+            nums = []
+            for ma in turn.moving_averages.all():
+                nums.append(ma.web_needed)
+            turn.save()
+            connection.send('CONTROL ' + str(nums[0]) + ' ' + str(nums[1]) + ' ' + str(nums[2]) + ' 1 1 1 1 1 1 1')
         else:
             break
 
     connection.send('STOP')
 
 def determine_moving_averages(turn):
-
-    SMOOTH = 2 / (1+2)
+    SMOOTH = 2.0 / (1+2)
     demands = turn.demands
 
     try:
@@ -97,7 +104,7 @@ def determine_moving_averages(turn):
                     last_ma = m
 
             ma.short_term = last_demand.count
-            ma.long_term = (ma.transactions * SMOOTH) + (last_ma.long_term * 1 - SMOOTH)
+            ma.long_term = (ma.transactions * SMOOTH) + (last_ma.long_term * (1 - SMOOTH))
         else:
             ma.short_term = ma.transactions
             ma.long_term = ma.transactions
@@ -107,9 +114,10 @@ def determine_moving_averages(turn):
         for d in turn.config.all():
             if d.region == ma.region and d.tier.tier == 'w':
                 resources = d.count
-
-        ma.web_rsource = resources
-
+        ma.web_resources = (resources * 180)
+        logger = logging.getLogger(__name__)
+        logging.error('ERROR!')
+        logger.error('resources ' + str(resources))
         ma.save()
         mas.append(ma)
 
