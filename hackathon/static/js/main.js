@@ -162,6 +162,7 @@ $(document).ready(function(){
 		slowDownButton = $('#slow_down_button'),
 		stopGameButton = $('#stop_game_button'),
 		nextTurnButton = $('#next_turn_button'),
+		previousTurnButton = $('#previous_turn_button'),
 		resumeGameButton = $('#resume_game_button'),
 		clearErrorLogButton = $('#clear_error_log_button'),
 		currentNum = 1,
@@ -174,9 +175,7 @@ $(document).ready(function(){
 			$.post('/game/start/', function(response) {
 				$('#game_controls').find('.response').html(make_message(response.status, response.message));
 				if (response.status === 'success') {
-					enableGameControls([speedUpButton, slowDownButton, stopGameButton]);
-					disableGameControls([startGameButton]);
-					startGameRefresh = setInterval(getTurn, timeBetween);
+					startGame();
 				}
 			},'json');
 		}
@@ -184,6 +183,12 @@ $(document).ready(function(){
 
 	nextTurnButton.on('click', function(e) {
 		e.preventDefault();
+		getTurn(currentNum);
+	});
+
+	previousTurnButton.on('click', function(e) {
+		e.preventDefault();
+		currentNum = currentNum - 2;
 		getTurn(currentNum);
 	});
 
@@ -204,16 +209,12 @@ $(document).ready(function(){
 	stopGameButton.on('click', function(e) {
 		e.preventDefault();
 		var el = $(this);
-		disableGameControls([speedUpButton, slowDownButton, stopGameButton]);
-		enableGameControls([startGameButton]);
-		clearInterval(startGameRefresh);
+		stopGame();
 	});
 
 	resumeGameButton.on('click', function(e) {
 		e.preventDefault();
-		enableGameControls([speedUpButton, slowDownButton, stopGameButton]);
-		disableGameControls([startGameButton]);
-		startGameRefresh = setInterval(getTurn, timeBetween);
+		startGame();
 	});
 
 	clearErrorLogButton.on('click', function(e) {
@@ -221,12 +222,27 @@ $(document).ready(function(){
 		$('#error_log').find('tbody').children().empty();
 	});
 
+	var startGame = function() {
+		enableGameControls([speedUpButton, slowDownButton, stopGameButton, nextTurnButton, previousTurnButton]);
+		disableGameControls([startGameButton, resumeGameButton]);
+		startGameRefresh = setInterval(getTurn, timeBetween);
+	};
+
+	var stopGame = function() {
+		disableGameControls([speedUpButton, slowDownButton, stopGameButton]);
+		enableGameControls([startGameButton, resumeGameButton]);
+		clearInterval(startGameRefresh);
+	};
+
 	var setGameLoopTimer = function() {
 		clearInterval(startGameRefresh);
 		startGameRefresh = setInterval(getTurn, timeBetween);
-	}
+	};
 
 	var getTurn = function() {
+		if (currentNum <= 0) {
+			currentNum = 1;
+		}
 		$.post('/turn/' + currentNum, function(response) {
 			if (response) {
 				response = deserializeAgain(response);
@@ -237,31 +253,44 @@ $(document).ready(function(){
 				setConfigGraph(response.config);
 				setDemandByRegionGraph(response.demands);
 				setTotalProfitGraph(response.profit[0].fields.total_potential);
+				setTurnData(response.time);
 			}
 		},'json')
 		.error(function() {
-			var currentdate = new Date(),
-					datetime = currentdate.getDate() + "/"
-					+ (currentdate.getMonth()+1)  + "/"
-					+ currentdate.getFullYear() + " @ "
-					+ currentdate.getHours() + ":"
-					+ currentdate.getMinutes() + ":"
-					+ currentdate.getSeconds();
-				addError("Could not retrieve turn " + currentNum + ". Have we reached the end of the game?", datetime);
+			var currentDate = new Date();
+				addError("Could not retrieve turn " + currentNum + ". Have we reached the end of the game?", formatDate(currentDate));
 		});
+	};
+
+	var formatDate = function(currentDate) {
+		return currentDate.getDate() + "/"
+			+ (currentDate.getMonth()+1)  + "/"
+			+ currentDate.getFullYear() + " @ "
+			+ currentDate.getHours() + ":"
+			+ currentDate.getMinutes() + ":"
+			+ currentDate.getSeconds();
+	}
+
+	var setTurnData = function(currentDate) {
+		$('.turn_num').html(currentNum);
+		$('.turn_date_time').html(currentDate);
 	};
 
 	var addError = function(message, timestamp) {
 		var tbody = $('#error_log').find('tbody');
 		tbody.append('<tr><td>' + message + '</td><td>' + timestamp + '</td></tr>');
-	}
+	};
 
 	var deserializeAgain = function(ar) {
 		// Workaround method for having to serialize each element of array
 		// in the Django controller
 		var result = {};
 		$.each(ar, function(idx, val) {
-			result[idx] = JSON.parse(val);
+			if (idx !== 'time') {
+				result[idx] = JSON.parse(val);
+			} else {
+				result[idx] = val;
+			}
 		});
 		return result;
 	};
