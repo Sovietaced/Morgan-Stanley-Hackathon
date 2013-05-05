@@ -22,6 +22,7 @@ def run(port):
         thread.start()
 
 def start(connection):
+    print 'FUCK'
     day_str = None
     day_num = 0
     while True:
@@ -65,6 +66,7 @@ def start(connection):
             turn = determine_moving_averages(turn)
             turn.save()
 
+            print 'swag'
             nums = []
             for ma in turn.moving_averages.all():
                 if(turn.id%3 == 0):
@@ -75,10 +77,14 @@ def start(connection):
                 if(turn.id%5 == 0):
                     nums.append(str(ma.java_needed))
                 else:
-                    numbs.append('0')
+                    nums.append('0')
+                    
             for ma in turn.moving_averages.all():
-                if(turn.id%9):
-                    nums.append(str(ma.db_needed))
+                if turn.id%9 == 0:
+                    if ma.region.region == 'e' and ma.db_needed < 0:
+                        nums.append('0')
+                    else:
+                        nums.append(str(ma.db_needed))
                 else:
                     nums.append('0')
             
@@ -130,38 +136,64 @@ def determine_moving_averages(turn):
             if d.region == ma.region:
                 resources.append(d.count)
 
-        ma.web_resources = resources[0] * 180
-        ma.java_resources = resources[1] * 400
-        ma.db_resources = resources[2] * 1000
+        ma.web_resources = resources[0] * 213
+        ma.java_resources = resources[1] * 467
+        # Modified
+        ma.db_resources = resources[2] * 1167
         
-        web_needed =  math.ceil((ma.transactions - ma.web_resources) / 180.0)
-        print 'WEB resourcs in ' + ma.region.region + ' : ' + str(resources[0]) + ' needed : ' + str(web_needed)
-        if web_needed > 0:
-            ma.web_needed = web_needed
-        else:
-            print 'transactions : ' + str(ma.transactions) + ' \n web resources : ' + str(ma.web_resources)
-            ma.web_needed = (ma.transactions - ma.web_resources)/180
-            if resources[0] + ma.web_needed <= 0:
+        if ma.web_resources == 0:
+            if ma.transactions > 33:
+                ma.web_needed = 1
+            else:
                 ma.web_needed = 0
-                      
-        java_needed = math.ceil((ma.transactions - ma.java_resources) / 400.0)
-        print 'JAVA resourcs in ' + ma.region.region + ' : ' + str(resources[1]) + ' needed : ' + str(java_needed)
-        if java_needed > 0:
-            ma.java_needed = java_needed
         else:
-            ma.java_needed = (ma.transactions - ma.java_resources)/400
-            print str(' new java needed : ' + str(ma.java_needed))
-            if resources[1] + ma.java_needed <= 0:
-                ma.java_needed = 0
+            web_needed =  (ma.transactions - ma.web_resources) / 214.0
             
-        db_needed = math.ceil((ma.transactions - ma.db_resources) / 1000.0)
-        print 'DB resourcs in ' + ma.region.region + ' : ' + str(resources[2]) + ' needed : ' + str(db_needed)
-        if db_needed > 0:
-            ma.db_needed = db_needed
+            print " MA TRANSACTIONS : " + str(ma.transactions)
+            print " MA WEB RESOURCES : " + str(ma.web_resources)
+            print "WEB NEEDED : " + str(web_needed)
+            if web_needed > 0:
+                ma.web_needed = web_needed
+            else:
+                print 'transactions : ' + str(ma.transactions) + ' \n web resources : ' + str(ma.web_resources)
+                ma.web_needed = (ma.transactions - ma.web_resources) / 214
+                print "MA WEB NEEDED : " + str(ma.web_needed)
+                if ma.web_needed == 0:
+                    pass
+                else:
+                    if resources[0] + ma.web_needed <= 0:
+                        ma.web_needed = 0
+        
+        if ma.java_resources == 0:
+            if ma.transactions * .9 > 67:
+                ma.java_needed = 1
+            else:
+                ma.java_needed = 0
         else:
-            ma.db_needed = (ma.transactions - ma.db_resources)/1000
-            if resources[2] + ma.db_needed <= 0:
+            java_needed = ((ma.transactions * .9) - ma.java_resources) / 468
+            if java_needed > 0:
+                ma.java_needed = java_needed
+            else:
+                ma.java_needed = int(((ma.transactions * .9) - ma.java_resources)/468)
+                if resources[1] + ma.java_needed <= 0:
+                    ma.java_needed = 0
+        
+        if ma.db_resources == 0:
+            #used to be 167
+            if ma.transactions * .8 > 500:
+                ma.db_needed = 1
+            else:
                 ma.db_needed = 0
+        else:
+            db_needed = int(((ma.transactions * .8) - ma.db_resources) / 1168)
+            if db_needed > 0:
+                ma.db_needed = db_needed
+            else:
+                ma.db_needed = ((ma.transactions * .8) - ma.db_resources)/1168
+                if resources[2] + ma.db_needed < 500:
+                    ma.db_needed = -1
+                else:
+                    ma.db_needed = 0
 
         ma.save()
         mas.append(ma)
@@ -174,12 +206,13 @@ def generate_cost_models(costs):
 
     # CLean the DB before we start a new game
     Tier.objects.all().delete()
-    revenue_transaction_cents = costs[0]
+    revenue = costs[0]
     # Web Tier
     cost_web = costs[1]
     tier_web = Tier()
     tier_web.tier = 'w';
     tier_web.cost = int(cost_web)
+    tier_web.revenue = int(revenue)
     tier_web.save()
 
     # Java Tier
@@ -187,12 +220,14 @@ def generate_cost_models(costs):
     tier_java = Tier()
     tier_java.tier = 'j'
     tier_java.cost = int(cost_java)
+    tier_java.revenue = int(revenue)
     tier_java.save()
 
     cost_db = costs[3]
     tier_db = Tier()
     tier_db.tier = 'd'
     tier_db.cost = int(cost_db)
+    tier_db.revenue = int(revenue)
     tier_db.save()
 
 def generate_region_models():

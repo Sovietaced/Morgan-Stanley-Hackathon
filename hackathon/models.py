@@ -21,6 +21,7 @@ class Tier(models.Model):
 	)
 	tier = models.CharField(max_length=1, choices=TIER_CHOICES, db_index=True)
 	cost = models.IntegerField(db_index=True)
+	revenue = models.IntegerField(db_index=True)
 
 	def __unicode__(self):
 		return self.tier
