@@ -151,7 +151,7 @@ def determine_moving_averages(turn):
 
         # Calculate break even cost
         WEB_BREAK = int(web_cost / revenue)
-        JAVE_BREAK = int(java_cost / revenue)
+        JAVA_BREAK = int(java_cost / revenue)
         DB_BREAK = int(db_cost / revenue)
 
         # Assign
