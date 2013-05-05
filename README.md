@@ -1,2 +1,2 @@
 ## Marist College Spring 2013 Hackathon Sponsored by Morgan Stanley
-### 420 blaze it
+### Vin Raia, [Jason Parraga](http://jasonparraga.com/), [Bob Nisco](http://bobnisco.com/)
