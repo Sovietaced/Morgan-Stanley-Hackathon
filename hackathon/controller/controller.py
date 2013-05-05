@@ -69,7 +69,8 @@ def start(connection):
             logger.error('test')
             nums = []
             for ma in turn.moving_averages.all():
-                nums.append(ma.web_needed)   
+                nums.append(ma.web_needed)
+            logging.error(' WEB NEEDED : ' + str(ma.web_needed))
             
             turn.save()
             connection.send('CONTROL ' + str(nums[0]) + ' ' + str(nums[1]) + ' ' + str(nums[2]) + ' 1 1 1 1 1 1 1')
@@ -118,9 +119,6 @@ def determine_moving_averages(turn):
                 resources = d.count
                 
         ma.web_resources = (resources * 180)
-        logger = logging.getLogger(__name__)
-        logging.error('ERROR!')
-        logger.error('resources ' + str(resources))
         
         ma.save()
         mas.append(ma)
