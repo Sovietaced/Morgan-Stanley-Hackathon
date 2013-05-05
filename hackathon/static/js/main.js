@@ -165,6 +165,7 @@ $(document).ready(function(){
 		previousTurnButton = $('#previous_turn_button'),
 		resumeGameButton = $('#resume_game_button'),
 		clearErrorLogButton = $('#clear_error_log_button'),
+		resetGameButton = $('#reset_game_button'),
 		currentNum = 1,
 		timeBetween = 1000,
 		startGameRefresh = 0;
@@ -215,6 +216,18 @@ $(document).ready(function(){
 	resumeGameButton.on('click', function(e) {
 		e.preventDefault();
 		startGame();
+	});
+
+	resetGameButton.on('click', function(e) {
+		e.preventDefault();
+		currentNum = 1;
+		timeBetween = 1000;
+		setTotalProfit(0);
+		setConfigGraph(0);
+		setDemandByRegionGraph(0);
+		setTotalProfitGraph(0);
+		setTurnData(0);
+		startGameButton.trigger('click');
 	});
 
 	clearErrorLogButton.on('click', function(e) {
