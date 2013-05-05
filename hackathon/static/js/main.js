@@ -90,7 +90,7 @@ $(document).ready(function(){
 			}
 		},
 		series: [{
-			name: 'Loss',
+			name: 'Potential',
 			color: '#E74C3C',
 			data: [0]
 		},{
@@ -145,7 +145,7 @@ $(document).ready(function(){
 		var el = $(this);
 		if (!el.hasClass('disabled')) {
 			$.post('/game/start/', function(response) {
-				$('#game_controls').find('.response').html(make_message(response.status, response.message));
+				$('#sortable_container').find('.response').html(make_message(response.status, response.message));
 				if (response.status === 'success') {
 					startGame();
 				}
@@ -230,7 +230,7 @@ $(document).ready(function(){
 		$.post('/turn/' + currentNum, function(response) {
 			if (response) {
 				response = deserializeAgain(response);
-				console.log(response);
+				//console.log(response);
 				currentNum += 1;
 				var profitSpan = $('.positive_profit');
 				setTotalProfit(response.profit[0].fields.total_profit);
