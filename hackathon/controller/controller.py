@@ -41,8 +41,8 @@ def start(connection):
             # Config Parsing
             config = config.strip('CONFIG ').split(' ')
             turn.config = generate_server_map_model(config)
-            
-            
+
+
 
             # Demand and Time Parsing
             connection.send('RECD')
@@ -146,28 +146,28 @@ def determine_moving_averages(turn):
         ma.java_resources = resources[1] * JAVA_WEIGHT
         DB_WEIGHT = 1167
         ma.db_resources = resources[2] * DB_WEIGHT
-        
+
         RESOURCE_WEIGHT = 1
         if turn.id > 2:
             first_turn = Turn.objects.get(id=turn.id-2)
             mass = first_turn.moving_averages.all()
-            
+
             first_ma = None
             for m in mass:
                 if m.region == ma.region:
                     first_ma = m
-                    
+
             second_turn = Turn.objects.get(id=turn.id-1)
             mass = second_turn.moving_averages.all()
-            
+
             second_ma = None
             for m in mass:
                 if m.region == ma.region:
                     second_ma = m
-            
+
             if first_ma.short_term < first_ma.long_term and second_ma.short_term > second_ma.long_term:
-                RESOURCE_WEIGHT = 1.5
-                
+                RESOURCE_WEIGHT = 2.0
+
         if ma.web_resources == 0:
             if ma.transactions * RESOURCE_WEIGHT > 33:
                 ma.web_needed = 1
@@ -178,7 +178,7 @@ def determine_moving_averages(turn):
             if web_needed > 0:
                 ma.web_needed = web_needed
             else:
-                ma.web_needed =  int(math.ceil((ma.transactions - ma.web_resources) / 214.0))
+                ma.web_needed =  int(math.ceil((ma.transactions - ma.web_resources) / (214.0/2)))
                 if ma.web_needed == 0:
                     pass
                 else:
@@ -196,15 +196,15 @@ def determine_moving_averages(turn):
                 ma.java_needed = java_needed
             else:
                 # Using ceil here because its all fucked up with negative numbers in python
-                ma.java_needed = int(math.ceil(((ma.transactions * RESOURCE_WEIGHT) - ma.java_resources)/ JAVA_WEIGHT))
-                
+                ma.java_needed = int(math.ceil(((ma.transactions * RESOURCE_WEIGHT) - ma.java_resources)/ (JAVA_WEIGHT/2)))
+
                 if ma.java_needed == 0:
                     pass
                 else:
                     print 'we really here now'
                     if resources[1] + ma.java_needed <= 0:
                         ma.java_needed = ma.java_needed + 1
-        
+
         if ma.db_resources == 0:
             if ma.transactions > (DB_WEIGHT/2):
                 ma.db_needed = 1
