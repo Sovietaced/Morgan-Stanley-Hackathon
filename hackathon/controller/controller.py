@@ -186,42 +186,38 @@ def determine_moving_averages(turn):
             # Calculate the rising resource weight
             if first_ma.short_term < first_ma.long_term and second_ma.short_term > second_ma.long_term:
                 RESOURCE_WEIGHT = 2.0
-
+                        
         if ma.web_resources == 0:
-            if ma.transactions * RESOURCE_WEIGHT > WEB_BREAK:
+            if ma.transactions > WEB_BREAK:
                 ma.web_needed = 1
             else:
                 ma.web_needed = 0
         else:
-            web_needed =  int(math.ceil((ma.transactions * RESOURCE_WEIGHT - ma.web_resources) / float(WEB_WEIGHT)))
+            web_needed =  (ma.transactions - ma.web_resources) / float(WEB_WEIGHT)
+            
             if web_needed > 0:
                 ma.web_needed = web_needed
             else:
-                ma.web_needed =  int(math.ceil((ma.transactions - ma.web_resources) / (float(WEB_WEIGHT)/2)))
+                ma.web_needed = (ma.transactions - ma.web_resources) / WEB_WEIGHT
                 if ma.web_needed == 0:
                     pass
                 else:
                     if resources[0] + ma.web_needed <= 0:
-                        ma.web_needed = ma.web_needed + 1
-
+                        ma.web_needed = 0
+                        
         if ma.java_resources == 0:
-            if ma.transactions * RESOURCE_WEIGHT > JAVA_BREAK:
+            if ma.transactions > JAVA_BREAK:
                 ma.java_needed = 1
             else:
                 ma.java_needed = 0
         else:
-            java_needed = ((ma.transactions * RESOURCE_WEIGHT) - ma.java_resources) / JAVA_WEIGHT
+            java_needed = ((ma.transactions * .9) - ma.java_resources) / JAVA_WEIGHT
             if java_needed > 0:
                 ma.java_needed = java_needed
             else:
-                # Using ceil here because its all fucked up with negative numbers in python
-                ma.java_needed = int(math.ceil(((ma.transactions * RESOURCE_WEIGHT) - ma.java_resources) / (float(JAVA_WEIGHT)/2)))
-
-                if ma.java_needed == 0:
-                    pass
-                else:
-                    if resources[1] + ma.java_needed <= 0:
-                        ma.java_needed = ma.java_needed + 1
+                ma.java_needed = int(((ma.transactions) - ma.java_resources)/JAVA_WEIGHT)
+                if resources[1] + ma.java_needed <= 0:
+                    ma.java_needed = 0
 
         if ma.db_resources == 0:
             if ma.transactions > (DB_WEIGHT/2):
@@ -235,6 +231,23 @@ def determine_moving_averages(turn):
             else:
                 ma.db_needed = ((ma.transactions) - ma.db_resources)/ DB_WEIGHT
                 if (resources[2] * DB_WEIGHT) + (ma.db_needed * DB_WEIGHT) < (DB_WEIGHT*.75):
+                    ma.db_needed = -1
+                else:
+                    ma.db_needed = 0
+                    
+        if ma.db_resources == 0:
+            #used to be 167
+            if ma.transactions * .8 > (DB_WEIGHT/2):
+                ma.db_needed = 1
+            else:
+                ma.db_needed = 0
+        else:
+            db_needed = int(((ma.transactions * .8) - ma.db_resources) / DB_WEIGHT)
+            if db_needed > 0:
+                ma.db_needed = db_needed
+            else:
+                ma.db_needed = ((ma.transactions * .8) - ma.db_resources)/DB_WEIGHT
+                if resources[2] + ma.db_needed < (DB_WEIGHT/2):
                     ma.db_needed = -1
                 else:
                     ma.db_needed = 0
