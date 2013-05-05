@@ -185,10 +185,10 @@ def determine_moving_averages(turn):
 
             # Calculate the rising resource weight
             if first_ma.short_term < first_ma.long_term and second_ma.short_term > second_ma.long_term:
-                RESOURCE_WEIGHT = 2.0
+                RESOURCE_WEIGHT = 1.5
                         
         if ma.web_resources == 0:
-            if ma.transactions > WEB_BREAK:
+            if ma.transactions * RESOURCE_WEIGHT > WEB_BREAK:
                 ma.web_needed = 1
             else:
                 ma.web_needed = 0
@@ -206,7 +206,7 @@ def determine_moving_averages(turn):
                         ma.web_needed = 0
                         
         if ma.java_resources == 0:
-            if ma.transactions > JAVA_BREAK:
+            if ma.transactions * RESOURCE_WEIGHT > JAVA_BREAK:
                 ma.java_needed = 1
             else:
                 ma.java_needed = 0
