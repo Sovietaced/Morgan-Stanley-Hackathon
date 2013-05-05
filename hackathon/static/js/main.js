@@ -169,15 +169,15 @@ $(document).ready(function(){
 	startGameButton.on('click', function(e) {
 		var el = $(this);
 		if (!el.hasClass('disabled')) {
-			//$.post('/game/start/', function(response) {
-			//	$('#game_controls').find('.response').html(make_message(response.status, response.message));
-				//if (response.status === 'success') {
+			$.post('/game/start/', function(response) {
+				$('#game_controls').find('.response').html(make_message(response.status, response.message));
+				if (response.status === 'success') {
 					enableGameControls([speedUpButton, slowDownButton, stopGameButton]);
 					disableGameControls([startGameButton]);
 					//getNextTurn(1);
 					startGameRefresh = setInterval(getTurn, timeBetween);
-				//}
-			//},'json');
+				}
+			},'json');
 		}
 	});
 

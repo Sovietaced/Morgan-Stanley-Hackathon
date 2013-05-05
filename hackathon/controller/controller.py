@@ -20,6 +20,9 @@ def run(port):
 
         thread = threading.Thread(target=start, args=[connection])
         thread.start()
+        return True
+    else:
+        return False
 
 def start(connection):
     print 'FUCK'
@@ -51,7 +54,7 @@ def start(connection):
             connection.send('RECD')
             distribution = connection.recv(4096)
             distribution = distribution.strip('DIST ').split(' ')
-            
+
             turn.distribution = generate_server_map_model(distribution)
 
             # Profit Parsing
@@ -78,7 +81,7 @@ def start(connection):
                     nums.append(str(ma.java_needed))
                 else:
                     nums.append('0')
-                    
+
             for ma in turn.moving_averages.all():
                 if turn.id%9 == 0:
                     if ma.region.region == 'e' and ma.db_needed < 0:
@@ -87,13 +90,13 @@ def start(connection):
                         nums.append(str(ma.db_needed))
                 else:
                     nums.append('0')
-            
+
             turn.save()
             #if(turn.id == 1):
                 #connection.send('CONTROL 0 2 2 0 0 0 0 0 0')
             print 'CONTROL ' + ' '.join([n for n in nums])
             connection.send('CONTROL ' + ' '.join([n for n in nums]))
-            
+
         else:
             break
 
@@ -140,7 +143,7 @@ def determine_moving_averages(turn):
         ma.java_resources = resources[1] * 467
         # Modified
         ma.db_resources = resources[2] * 1167
-        
+
         if ma.web_resources == 0:
             if ma.transactions > 33:
                 ma.web_needed = 1
@@ -148,7 +151,7 @@ def determine_moving_averages(turn):
                 ma.web_needed = 0
         else:
             web_needed =  (ma.transactions - ma.web_resources) / 214.0
-            
+
             print " MA TRANSACTIONS : " + str(ma.transactions)
             print " MA WEB RESOURCES : " + str(ma.web_resources)
             print "WEB NEEDED : " + str(web_needed)
@@ -163,7 +166,7 @@ def determine_moving_averages(turn):
                 else:
                     if resources[0] + ma.web_needed <= 0:
                         ma.web_needed = 0
-        
+
         if ma.java_resources == 0:
             if ma.transactions * .9 > 67:
                 ma.java_needed = 1
@@ -177,7 +180,7 @@ def determine_moving_averages(turn):
                 ma.java_needed = int(((ma.transactions * .9) - ma.java_resources)/468)
                 if resources[1] + ma.java_needed <= 0:
                     ma.java_needed = 0
-        
+
         if ma.db_resources == 0:
             #used to be 167
             if ma.transactions * .8 > 500:
