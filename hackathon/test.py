@@ -3,7 +3,7 @@ from datetime import datetime
 
 
 def run():
-    connection = connect(57014)
+    connection = connect(57012)
 
     if connection:
         print 'swag'
@@ -30,16 +30,18 @@ def start(connection):
     print 'started connection'
     while True:
         # Generate the turn model
-        config = connection.recv(4096)
+        config = connection.recv(9999)
         if not 'END' in config:
         
             print connection.send('RECD')
-            print connection.recv(4096)
+            print connection.recv(9999)
             print connection.send('RECD')
-            print connection.recv(4096)
+            print connection.recv(9999)
             print connection.send('RECD')
-            print connection.recv(4096)
+            profit = connection.recv(9999)
+            print profit
             print connection.send('CONTROL 1 1 1 1 1 1 1 1 1')
+            print '\n'
         else:
             break
     print 'sending stop'

@@ -27,10 +27,8 @@ def start(connection):
     while True:
         # Generate the turn model
         config = connection.recv(4096)
+        print 'config ' + config
         if not 'END' in config:
-
-            # Get an instance of a logger
-            logger = logging.getLogger(__name__)
 
             # Generate Turn model to dump stuff into
             turn = Turn()
@@ -52,6 +50,7 @@ def start(connection):
             connection.send('RECD')
             distribution = connection.recv(4096)
             distribution = distribution.strip('DIST ').split(' ')
+            
             turn.distribution = generate_server_map_model(distribution)
 
             # Profit Parsing
@@ -68,12 +67,27 @@ def start(connection):
 
             nums = []
             for ma in turn.moving_averages.all():
-                nums.append(str(ma.web_needed) + ' ')
-                nums.append(str(ma.java_needed) + ' ')
-                nums.append(str(ma.db_needed) + ' ')
+                if(turn.id%3 == 0):
+                    nums.append(str(ma.web_needed))
+                else:
+                    nums.append('0')
+            for ma in turn.moving_averages.all():
+                if(turn.id%5 == 0):
+                    nums.append(str(ma.java_needed))
+                else:
+                    numbs.append('0')
+            for ma in turn.moving_averages.all():
+                if(turn.id%9):
+                    nums.append(str(ma.db_needed))
+                else:
+                    nums.append('0')
             
             turn.save()
-            connection.send('CONTROL '.join([n for n in nums]))
+            #if(turn.id == 1):
+                #connection.send('CONTROL 0 2 2 0 0 0 0 0 0')
+            print 'CONTROL ' + ' '.join([n for n in nums])
+            connection.send('CONTROL ' + ' '.join([n for n in nums]))
+            
         else:
             break
 
@@ -114,29 +128,40 @@ def determine_moving_averages(turn):
         resources = []
         for d in turn.config.all():
             if d.region == ma.region:
-                resources.append(d)
-                
-        ma.web_resources = (resources[0].count * 180)
-        ma.java_resources = (resources[1].count * 180)
-        ma.db_resources = (resources[2].count * 180)
+                resources.append(d.count)
+
+        ma.web_resources = resources[0] * 180
+        ma.java_resources = resources[1] * 400
+        ma.db_resources = resources[2] * 1000
         
         web_needed =  math.ceil((ma.transactions - ma.web_resources) / 180.0)
+        print 'WEB resourcs in ' + ma.region.region + ' : ' + str(resources[0]) + ' needed : ' + str(web_needed)
         if web_needed > 0:
             ma.web_needed = web_needed
         else:
+            print 'transactions : ' + str(ma.transactions) + ' \n web resources : ' + str(ma.web_resources)
             ma.web_needed = (ma.transactions - ma.web_resources)/180
-            
+            if resources[0] + ma.web_needed <= 0:
+                ma.web_needed = 0
+                      
         java_needed = math.ceil((ma.transactions - ma.java_resources) / 400.0)
+        print 'JAVA resourcs in ' + ma.region.region + ' : ' + str(resources[1]) + ' needed : ' + str(java_needed)
         if java_needed > 0:
             ma.java_needed = java_needed
         else:
             ma.java_needed = (ma.transactions - ma.java_resources)/400
+            print str(' new java needed : ' + str(ma.java_needed))
+            if resources[1] + ma.java_needed <= 0:
+                ma.java_needed = 0
             
         db_needed = math.ceil((ma.transactions - ma.db_resources) / 1000.0)
+        print 'DB resourcs in ' + ma.region.region + ' : ' + str(resources[2]) + ' needed : ' + str(db_needed)
         if db_needed > 0:
             ma.db_needed = db_needed
         else:
             ma.db_needed = (ma.transactions - ma.db_resources)/1000
+            if resources[2] + ma.db_needed <= 0:
+                ma.db_needed = 0
 
         ma.save()
         mas.append(ma)
@@ -187,7 +212,6 @@ def generate_region_models():
 
 
 def generate_server_map_model(server_map):
-
     devices = []
 
     for region in Region.objects.all():
@@ -202,7 +226,7 @@ def generate_server_map_model(server_map):
         java_device = Device()
         java_device.tier = Tier.objects.get(tier='j')
         java_device.region = region
-        java_device.count = server_map[3 + list(Region.objects.all()).index(region)]
+        java_device.count = server_map[3]
         java_device.save()
         devices.append(java_device)
 
