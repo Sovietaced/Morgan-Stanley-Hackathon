@@ -73,7 +73,7 @@ $(document).ready(function(){
 			enabled : false
 		},
 		title: {
-			text: 'Total Profit'
+			text: 'Total Profit Potential'
 		},
 		xAxis: {
 			categories: ['Profit','Loss'],
