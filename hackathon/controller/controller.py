@@ -2,7 +2,7 @@ import socket, sys, threading, logging
 from datetime import datetime
 from ..models import Tier, Turn, Device, Region, Profit, Demand, MovingAverage
 from django.conf import settings
-import django
+import django, math
 
 def run(port):
     connection = connect(port)
@@ -66,12 +66,14 @@ def start(connection):
             turn = determine_moving_averages(turn)
             turn.save()
 
-            logger.error('test')
             nums = []
             for ma in turn.moving_averages.all():
-                nums.append(ma.web_needed)
+                nums.append(str(ma.web_needed) + ' ')
+                nums.append(str(ma.java_needed) + ' ')
+                nums.append(str(ma.db_needed) + ' ')
+            
             turn.save()
-            connection.send('CONTROL ' + str(nums[0]) + ' ' + str(nums[1]) + ' ' + str(nums[2]) + ' 1 1 1 1 1 1 1')
+            connection.send('CONTROL '.join([n for n in nums]))
         else:
             break
 
@@ -109,15 +111,33 @@ def determine_moving_averages(turn):
             ma.short_term = ma.transactions
             ma.long_term = ma.transactions
 
-        ma.web_needed = ma.transactions / 180
-        resources = None
+        resources = []
         for d in turn.config.all():
-            if d.region == ma.region and d.tier.tier == 'w':
-                resources = d.count
-        ma.web_resources = (resources * 180)
-        logger = logging.getLogger(__name__)
-        logging.error('ERROR!')
-        logger.error('resources ' + str(resources))
+            if d.region == ma.region:
+                resources.append(d)
+                
+        ma.web_resources = (resources[0].count * 180)
+        ma.java_resources = (resources[1].count * 180)
+        ma.db_resources = (resources[2].count * 180)
+        
+        web_needed =  math.ceil((ma.transactions - ma.web_resources) / 180.0)
+        if web_needed > 0:
+            ma.web_needed = web_needed
+        else:
+            ma.web_needed = (ma.transactions - ma.web_resources)/180
+            
+        java_needed = math.ceil((ma.transactions - ma.java_resources) / 400.0)
+        if java_needed > 0:
+            ma.java_needed = java_needed
+        else:
+            ma.java_needed = (ma.transactions - ma.java_resources)/400
+            
+        db_needed = math.ceil((ma.transactions - ma.db_resources) / 1000.0)
+        if db_needed > 0:
+            ma.db_needed = db_needed
+        else:
+            ma.db_needed = (ma.transactions - ma.db_resources)/1000
+
         ma.save()
         mas.append(ma)
 

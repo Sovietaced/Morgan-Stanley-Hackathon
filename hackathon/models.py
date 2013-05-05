@@ -57,7 +57,11 @@ class MovingAverage(models.Model):
 	short_term = models.IntegerField(blank=True, null=True, db_index=True)
 	long_term = models.IntegerField(blank=True, null=True, db_index=True)
 	web_needed = models.IntegerField(blank=True, null=True, db_index=True)
+	java_needed = models.IntegerField(blank=True, null=True, db_index=True)
+	db_needed = models.IntegerField(blank=True, null=True, db_index=True)
 	web_resources = models.IntegerField(blank=True, null=True, db_index=True)
+	java_resources = models.IntegerField(blank=True, null=True, db_index=True)
+	db_resources = models.IntegerField(blank=True, null=True, db_index=True)
 
 	def __unicode__(self):
 		return "Transactions : " + str(self.transactions) + " Region " + self.region.region + " Short " + str(self.short_term) + " Long " + str(self.long_term) + " Web Needed : " + str(self.web_needed)
