@@ -220,7 +220,7 @@ def determine_moving_averages(turn):
                     ma.java_needed = 0
 
         if ma.db_resources == 0:
-            if ma.transactions > (DB_WEIGHT/2):
+            if ma.transactions > (DB_WEIGHT/2.2):
                 ma.db_needed = 1
             else:
                 ma.db_needed = 0
