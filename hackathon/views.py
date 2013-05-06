@@ -42,7 +42,7 @@ def start_game(request):
 		'status' : 'error',
 		'message' : 'Could not start the game. Please try again'
 	}
-	successful_start = run(57013)
+	successful_start = run(63334)
 	if successful_start:
 		result = {
 			'status' : 'success',

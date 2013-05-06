@@ -186,7 +186,7 @@ def determine_moving_averages(turn):
             # Calculate the rising resource weight
             if first_ma.short_term < first_ma.long_term and second_ma.short_term > second_ma.long_term:
                 RESOURCE_WEIGHT = 1.5
-                        
+
         if ma.web_resources == 0:
             if ma.transactions * RESOURCE_WEIGHT > WEB_BREAK:
                 ma.web_needed = 1
@@ -194,7 +194,7 @@ def determine_moving_averages(turn):
                 ma.web_needed = 0
         else:
             web_needed =  (ma.transactions - ma.web_resources) / float(WEB_WEIGHT)
-            
+
             if web_needed > 0:
                 ma.web_needed = web_needed
             else:
@@ -204,7 +204,7 @@ def determine_moving_averages(turn):
                 else:
                     if resources[0] + ma.web_needed <= 0:
                         ma.web_needed = 0
-                        
+
         if ma.java_resources == 0:
             if ma.transactions * RESOURCE_WEIGHT > JAVA_BREAK:
                 ma.java_needed = 1
@@ -234,7 +234,7 @@ def determine_moving_averages(turn):
                     ma.db_needed = -1
                 else:
                     ma.db_needed = 0
-                    
+
         if ma.db_resources == 0:
             #used to be 167
             if ma.transactions * .8 > (DB_WEIGHT/2):
@@ -347,7 +347,7 @@ def generate_demand_models(demand_list, day_str, day_num):
     seconds = demand_list[3]
 
     today = datetime.today()
-    day = today.day + day_num
+    day = today.day + 0
     date = datetime(today.year, today.month, day, int(hours),int(minutes),int(seconds))
 
     demands = []
