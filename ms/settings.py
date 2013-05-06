@@ -37,7 +37,7 @@ if os.environ.get('MYSITE_PRODUCTION', "False"):
                 }
         }
 
-if not os.environ.get('MYSITE_PRODUCTION', "False"):
+if os.environ.get('MYSITE_PRODUCTION', "True"):
     # Heroku Database
     DATABASES['default'] = dj_database_url.config()
 
