@@ -20,21 +20,22 @@ def index(request):
 
 def get_turn_data(request, id=1):
 
-	turn = list(Turn.objects.select_related().filter(id=id))[0]
 	if turn:
-		result = {
-			'time' : turn.time.strftime('%Y-%m-%dT%H:%M:%S'),
-			'config' : serializers.serialize('json', turn.config.all()),
-			'demands' : serializers.serialize('json', turn.demands.all()),
-			'distribution' : serializers.serialize('json', turn.distribution.all()),
-			'profit' : serializers.serialize('json', [turn.profit]),
-			'control' : serializers.serialize('json', turn.control.all()),
-			'revenue_cents' : turn.revenue_cents,
-			'moving_averages' : serializers.serialize('json', turn.moving_averages.all()),
-		}
-		return HttpResponse(json.dumps(result), content_type="application/json")
-	else:
-		return HttpResponseNotFound('<h1>Turn not found</h1>')
+		turn = list(Turn.objects.select_related().filter(id=id))[0]
+		if turn:
+			result = {
+				'time' : turn.time.strftime('%Y-%m-%dT%H:%M:%S'),
+				'config' : serializers.serialize('json', turn.config.all()),
+				'demands' : serializers.serialize('json', turn.demands.all()),
+				'distribution' : serializers.serialize('json', turn.distribution.all()),
+				'profit' : serializers.serialize('json', [turn.profit]),
+				'control' : serializers.serialize('json', turn.control.all()),
+				'revenue_cents' : turn.revenue_cents,
+				'moving_averages' : serializers.serialize('json', turn.moving_averages.all()),
+			}
+			return HttpResponse(json.dumps(result), content_type="application/json")
+		else:
+			return HttpResponseNotFound('<h1>Turn not found</h1>')
 
 def start_game(request):
 	"""Starts the game"""
